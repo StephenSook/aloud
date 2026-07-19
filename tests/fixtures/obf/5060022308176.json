@@ -1,0 +1,220 @@
+{
+ "status": 1,
+ "product": {
+  "product_name": "one night only\none night only",
+  "brands": "st. tropez",
+  "ingredients_text": "ate tan.\nIngredients/Ingredients:\nAqua (Water/Eau), Cyclopentasiloxane,\nGlycerin, Hydrogenated Polyisobutene,\nSodium Acrylate/Sodium Acryloyldimethyl\nTaurate Copolymer, PEG-60 Hydrogenated\nCastor Oil, Trimethylsiloxysilicate.\nIsohexadecane, Phenoxyethanol. Benzyl\nAlcohol, Polysorbate 80, Disteardimonium\nHectorite, Parfum (Fragrance), Sodium\nGluconate, Mica, Propylene Carbonate,\nLinalool, Hexyl Cinnamal, Benzyl Salicylate,\nButylphenyl Methylpropional, Citronellol,\nTriethoxycaprylylsilane, Limonene, Geraniol,\nHydroxycitronellal, Alpha-somethyl lonone,\nAnise Alcohol, Coumarin, CI 77492 (Iron\nOxides). CI 77499 (Iron Oxides), CI 77491\n(Iron Oxides). CI 77891 (Titanium Dioxide).\nStore below 30\ufffdC/86\ufffdF.\ninforieure",
+  "ingredients": [
+   {
+    "id": "en:ate-tan",
+    "text": "ate tan",
+    "percent_estimate": 51.3157894736842
+   },
+   {
+    "id": "en:ingredients",
+    "text": "Ingredients",
+    "percent_estimate": 24.3421052631579
+   },
+   {
+    "id": "en:ingredients",
+    "text": "Ingredients",
+    "percent_estimate": 12.1710526315789
+   },
+   {
+    "id": "en:cyclopentasiloxane",
+    "text": "Cyclopentasiloxane",
+    "percent_estimate": 6.08552631578947
+   },
+   {
+    "id": "en:e422",
+    "text": "Glycerin",
+    "percent_estimate": 3.04276315789474
+   },
+   {
+    "id": "en:hydrogenated-polyisobutene",
+    "text": "Hydrogenated Polyisobutene",
+    "percent_estimate": 1.52138157894737
+   },
+   {
+    "id": "en:sodium-acrylate",
+    "text": "Sodium Acrylate",
+    "percent_estimate": 0.760690789473685
+   },
+   {
+    "id": "en:sodium-acryloyldimethyl-taurate-copolymer",
+    "text": "Sodium Acryloyldimethyl Taurate Copolymer",
+    "percent_estimate": 0.380345394736842
+   },
+   {
+    "id": "en:peg-60-hydrogenated-castor-oil",
+    "text": "PEG-60 Hydrogenated Castor Oil",
+    "percent_estimate": 0.190172697368425
+   },
+   {
+    "id": "en:trimethylsiloxysilicate",
+    "text": "Trimethylsiloxysilicate",
+    "percent_estimate": 0.0950863486842124
+   },
+   {
+    "id": "en:isohexadecane",
+    "text": "Isohexadecane",
+    "percent_estimate": 0.0475431743421098
+   },
+   {
+    "id": "en:phenoxyethanol",
+    "text": "Phenoxyethanol",
+    "percent_estimate": 0.0237715871710549
+   },
+   {
+    "id": "en:e1519",
+    "text": "Benzyl Alcohol",
+    "percent_estimate": 0.0118857935855274
+   },
+   {
+    "id": "en:e433",
+    "text": "Polysorbate 80",
+    "percent_estimate": 0.00594289679276017
+   },
+   {
+    "id": "en:disteardimonium-hectorite",
+    "text": "Disteardimonium Hectorite",
+    "percent_estimate": 0.00297144839638008
+   },
+   {
+    "id": "en:parfum",
+    "text": "Parfum",
+    "percent_estimate": 0.00148572419819004
+   },
+   {
+    "id": "en:e576",
+    "text": "Sodium Gluconate",
+    "percent_estimate": 0.000742862099095021
+   },
+   {
+    "id": "en:mica",
+    "text": "Mica",
+    "percent_estimate": 0.000371431049543958
+   },
+   {
+    "id": "en:propylene-carbonate",
+    "text": "Propylene Carbonate",
+    "percent_estimate": 0.000185715524771979
+   },
+   {
+    "id": "en:linalool",
+    "text": "Linalool",
+    "percent_estimate": 9.28577623824367e-05
+   },
+   {
+    "id": "en:hexyl-cinnamal",
+    "text": "Hexyl Cinnamal",
+    "percent_estimate": 4.64288811912184e-05
+   },
+   {
+    "id": "en:benzyl-salicylate",
+    "text": "Benzyl Salicylate",
+    "percent_estimate": 2.32144405956092e-05
+   },
+   {
+    "id": "en:butylphenyl-methylpropional",
+    "text": "Butylphenyl Methylpropional",
+    "percent_estimate": 1.16072203013573e-05
+   },
+   {
+    "id": "en:citronellol",
+    "text": "Citronellol",
+    "percent_estimate": 5.80361015067865e-06
+   },
+   {
+    "id": "en:triethoxycaprylylsilane",
+    "text": "Triethoxycaprylylsilane",
+    "percent_estimate": 2.90180507533933e-06
+   },
+   {
+    "id": "en:limonene",
+    "text": "Limonene",
+    "percent_estimate": 1.45090253766966e-06
+   },
+   {
+    "id": "en:geraniol",
+    "text": "Geraniol",
+    "percent_estimate": 7.25451272387545e-07
+   },
+   {
+    "id": "en:hydroxycitronellal",
+    "text": "Hydroxycitronellal",
+    "percent_estimate": 3.62725636193773e-07
+   },
+   {
+    "id": "en:alpha-somethyl-lonone",
+    "text": "Alpha-somethyl lonone",
+    "percent_estimate": 1.813628216496e-07
+   },
+   {
+    "id": "en:anise-alcohol",
+    "text": "Anise Alcohol",
+    "percent_estimate": 9.06814108248e-08
+   },
+   {
+    "id": "en:coumarin",
+    "text": "Coumarin",
+    "percent_estimate": 4.53407054124e-08
+   },
+   {
+    "id": "en:ci-77492",
+    "text": "CI 77492",
+    "percent_estimate": 2.26703491534863e-08
+   },
+   {
+    "id": "en:ci-77499",
+    "text": "CI 77499",
+    "percent_estimate": 1.13351745767432e-08
+   },
+   {
+    "id": "en:ci-77491",
+    "text": "CI 77491",
+    "percent_estimate": 5.66758728837158e-09
+   },
+   {
+    "id": "en:ci-77891",
+    "text": "CI 77891",
+    "percent_estimate": 2.83379364418579e-09
+   },
+   {
+    "id": "en:store-below-30\ufffdc",
+    "text": "Store below 30\ufffdC",
+    "percent_estimate": 1.41689326937922e-09
+   },
+   {
+    "id": "en:86\ufffdf",
+    "text": "86\ufffdF",
+    "percent_estimate": 7.08446634689608e-10
+   },
+   {
+    "id": "en:inforieure",
+    "text": "inforieure",
+    "percent_estimate": 7.0843952926225e-10
+   }
+  ],
+  "states_tags": [
+   "en:to-be-completed",
+   "en:nutrition-facts-to-be-completed",
+   "en:ingredients-completed",
+   "en:expiration-date-to-be-completed",
+   "en:packaging-code-to-be-completed",
+   "en:characteristics-to-be-completed",
+   "en:origins-to-be-completed",
+   "en:categories-completed",
+   "en:brands-completed",
+   "en:packaging-completed",
+   "en:quantity-completed",
+   "en:product-name-completed",
+   "en:photos-to-be-validated",
+   "en:packaging-photo-to-be-selected",
+   "en:nutrition-photo-selected",
+   "en:ingredients-photo-selected",
+   "en:front-photo-selected",
+   "en:photos-uploaded"
+  ]
+ }
+}

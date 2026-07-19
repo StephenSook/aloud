@@ -4,6 +4,7 @@ import { useCallback, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { LiveRegion } from "@/components/LiveRegion";
 import type { CaptureMetrics } from "@/components/CameraCapture";
+import { composeSkinRead } from "@/lib/skin-read";
 
 const CameraCapture = dynamic(
   () => import("@/components/CameraCapture").then((m) => m.CameraCapture),
@@ -45,13 +46,10 @@ export default function CapturePage() {
     ]);
   }, []);
 
-  const speakResult = useCallback((outputs: SkinOutput[]) => {
-    const scored = outputs.filter((o) => typeof o.ui_score === "number");
-    const parts = scored.map((o) => `${o.type.replace(/_/g, " ")} ${o.ui_score} out of 100`);
-    return parts.length > 0
-      ? `The analysis accepted the photo. Scores: ${parts.join(", ")}. Higher means healthier looking.`
-      : "The analysis accepted the photo.";
-  }, []);
+  const speakResult = useCallback(
+    (outputs: SkinOutput[]) => composeSkinRead(outputs),
+    [],
+  );
 
   const analyze = useCallback(
     async (blob: Blob, metrics: CaptureMetrics) => {

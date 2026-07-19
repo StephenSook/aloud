@@ -15,8 +15,14 @@ export default function Home() {
         </p>
         <div className="flex flex-col gap-4 sm:flex-row">
           <a
-            href="/scan"
+            href="/talk"
             className="rounded-full bg-black px-8 py-4 text-lg font-medium text-white dark:bg-white dark:text-black"
+          >
+            Talk with Aloud
+          </a>
+          <a
+            href="/scan"
+            className="rounded-full border border-zinc-400 px-8 py-4 text-lg font-medium"
           >
             Scan a product
           </a>

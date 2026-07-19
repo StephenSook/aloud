@@ -10,7 +10,21 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   projects: [
-    { name: "mobile-safari-viewport", use: { ...devices["iPhone 14"], browserName: "chromium" } },
+    {
+      name: "mobile-safari-viewport",
+      use: {
+        ...devices["iPhone 14"],
+        browserName: "chromium",
+        // Fake camera/mic so permissioned flows run headless (green frames,
+        // test tone). Real-device behavior is verified on hardware.
+        launchOptions: {
+          args: [
+            "--use-fake-ui-for-media-stream",
+            "--use-fake-device-for-media-stream",
+          ],
+        },
+      },
+    },
   ],
   // Dedicated port: 3000 is often occupied by unrelated dev servers, and
   // reuseExistingServer would silently test the wrong app.

@@ -35,9 +35,13 @@ Company-reported figures are cited as "Perfect Corp reports", never as independe
 |---|---|---|
 | SD skin task cost, 1-4 concerns | VERIFIED (docs) | 9 units |
 | SD skin task cost, 5-7 concerns | VERIFIED (docs) | 12 units |
-| skin_type response JSON shape | **PENDING playground run** | TBD |
-| HD tier costs (feature-cost endpoint) | **PENDING playground run** | TBD |
-| Hackathon unit grant | VERIFIED | 1,000 units, 90-day validity from redemption |
+| skin_type response JSON shape | **VERIFIED live 2026-07-18** | Per-region entries `{type:"skin_type", region:"whole"\|"t_zone"\|"u_zone", skin_type:"Oily"\|"Normal"\|..., mask_urls[]}`; the guessed `class`/`ui_class` fields DO NOT EXIST. Fixture: `tests/fixtures/youcam/skin-type-success.json` |
+| format=json extras | **VERIFIED live 2026-07-18** | `output[]` also carries `{type:"all", score}`, `{type:"skin_age", score}`, and a `resize_image` entry with the resized source; `all.score` came back 0 on our runs, so narrate per-concern ui_scores only |
+| Error payload shape | **VERIFIED live 2026-07-18** | `task_status:"error"`, `error` is a stringified tuple `"('message', 'error_code')"`; failed tasks consume 0 units. Fixture: `tests/fixtures/youcam/error-face-too-small.json` |
+| Face-size rule | **VERIFIED live 2026-07-18** | 896px-wide image with face ~54% of width rejected `error_src_face_too_small`; ~77% accepted. Capture UI targets face >=65% of frame width |
+| HD tier costs (feature-cost endpoint) | **RESOLVED: build SD-only** | This account's feature-cost table lists NO skin-analysis SKUs (20 SKUs, all hair/photo tools); HD pricing unpublished anywhere. We ship SD only, so no HD claim ever appears |
+| Auth | **VERIFIED live 2026-07-18** | `Authorization: Bearer <API key>` works on v2.0 (secret key not needed for calls) |
+| Hackathon unit grant | VERIFIED | 1,000 units, 90-day validity from redemption; ~18 units spent on verification runs |
 
 ## Product set (Open Beauty Facts coverage)
 

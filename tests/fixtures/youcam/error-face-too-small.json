@@ -1,0 +1,8 @@
+{
+  "status": 200,
+  "data": {
+    "error": "('The face area in the uploaded image is too small', 'error_src_face_too_small')",
+    "results": null,
+    "task_status": "error"
+  }
+}

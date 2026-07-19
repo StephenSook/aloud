@@ -1,0 +1,55 @@
+{
+  "status": 200,
+  "data": {
+    "error": null,
+    "results": {
+      "output": [
+        {
+          "mask_urls": [
+            "https://example.invalid/expired-presigned/1d01278e-8979-4cb4-b572-8121326605a8_skin_type_output.png"
+          ],
+          "type": "skin_type",
+          "region": "whole",
+          "skin_type": "Oily",
+          "url": null
+        },
+        {
+          "mask_urls": [
+            "https://example.invalid/expired-presigned/1d01278e-8979-4cb4-b572-8121326605a8_skin_type_t_zone_output.png"
+          ],
+          "type": "skin_type",
+          "region": "t_zone",
+          "skin_type": "Normal",
+          "url": null
+        },
+        {
+          "mask_urls": [
+            "https://example.invalid/expired-presigned/1d01278e-8979-4cb4-b572-8121326605a8_skin_type_u_zone_output.png"
+          ],
+          "type": "skin_type",
+          "region": "u_zone",
+          "skin_type": "Oily",
+          "url": null
+        },
+        {
+          "score": 0,
+          "type": "all",
+          "url": null
+        },
+        {
+          "score": 48,
+          "type": "skin_age",
+          "url": null
+        },
+        {
+          "mask_urls": [
+            "https://example.invalid/expired-presigned/1d01278e-8979-4cb4-b572-8121326605a8_resize_image.jpg"
+          ],
+          "type": "resize_image",
+          "url": null
+        }
+      ]
+    },
+    "task_status": "success"
+  }
+}

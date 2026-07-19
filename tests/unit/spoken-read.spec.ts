@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { composeProductRead, composeSkinRead } from "@/lib/spoken-read";
+import {
+  composeComparisonRead,
+  composeProductRead,
+  composeSkinRead,
+} from "@/lib/spoken-read";
 import { findListedAllergens, allergenListSize, listsFragrance } from "@/lib/allergens";
 import { splitIngredientsText, type ProductLookup } from "@/lib/openbeautyfacts";
 
@@ -65,6 +69,39 @@ describe("composeProductRead (live-captured OBF fixtures)", () => {
         expect(read.summary, `${code} matches /${p.source}/`).not.toMatch(p);
       }
     }
+  });
+});
+
+describe("composeComparisonRead", () => {
+  it("contrasts labels without ranking products", () => {
+    const read = composeComparisonRead(
+      obfFixture("5060022308176"),
+      obfFixture("01133479"),
+    );
+    expect(read).toMatch(/comparing/i);
+    expect(read).toMatch(/ingredients versus/i);
+    expect(read).toMatch(/choice stays yours/i);
+    expect(read).not.toMatch(/\bbetter\b|\bworse\b|\bwinner\b/i);
+  });
+
+  it("degrades honestly when one product is missing", () => {
+    const read = composeComparisonRead(
+      obfFixture("5060022308176"),
+      obfFixture("3600523971282"),
+    );
+    expect(read).toMatch(/one of them is not in the database/i);
+  });
+
+  it("never crosses the claim line", () => {
+    const lexicon = JSON.parse(
+      readFileSync(path.resolve(__dirname, "../../data/banned-claims.json"), "utf8"),
+    ) as { claims: string[] };
+    const patterns = lexicon.claims.map((p) => new RegExp(p, "i"));
+    const read = composeComparisonRead(
+      obfFixture("5060022308176"),
+      obfFixture("01133479"),
+    );
+    for (const p of patterns) expect(read).not.toMatch(p);
   });
 });
 

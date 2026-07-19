@@ -1,0 +1,140 @@
+{
+ "status": 1,
+ "product": {
+  "product_name": "moisturizer",
+  "brands": "mamaearth",
+  "ingredients_text": "Ingredients overview\n\nAqua,\u00a0Cetearyl Octanoate,\u00a0Neopentyl Glycol Diheptanoate,\u00a0Glyceryl Stearate Citrate,\u00a0Glyceryl Dibehenate,\u00a0Cetostearyl Alcohol,\u00a0Methyl Glucose Sesquistearate,\u00a0Dicaprylyl Carbonate,\u00a0Glycerin,\u00a0Propanediol,\u00a0Apple Cider Vinegar,\u00a0Pentaerythrityl Distearate,\u00a0Betaine,\u00a0Methyl Methacrylate Crosspolymer,\u00a0Sodium Benzoate,\u00a0Potassium Sorbate,\u00a0Diethylhexyl Carbonate,\u00a0Xanthan Gum,\u00a0Acrylates/\u200bC10-30 Alkyl Acrylate Cross Polymer,\u00a0Natural Fragrance\n\n[less]\n\nRead more on\u00a0how to read an ingredient list &gt;&gt;",
+  "ingredients": [
+   {
+    "id": "en:ingredients-overview-aqua",
+    "text": "Ingredients overview Aqua",
+    "percent_estimate": 52.2727272727273
+   },
+   {
+    "id": "en:cetearyl-octanoate",
+    "text": "Cetearyl Octanoate",
+    "percent_estimate": 23.8636363636364
+   },
+   {
+    "id": "en:neopentyl-glycol-diheptanoate",
+    "text": "Neopentyl Glycol Diheptanoate",
+    "percent_estimate": 11.9318181818182
+   },
+   {
+    "id": "en:glyceryl-stearate-citrate",
+    "text": "Glyceryl Stearate Citrate",
+    "percent_estimate": 5.96590909090909
+   },
+   {
+    "id": "en:glyceryl-dibehenate",
+    "text": "Glyceryl Dibehenate",
+    "percent_estimate": 2.98295454545455
+   },
+   {
+    "id": "en:cetostearyl-alcohol",
+    "text": "Cetostearyl Alcohol",
+    "percent_estimate": 1.49147727272727
+   },
+   {
+    "id": "en:methyl-glucose-sesquistearate",
+    "text": "Methyl Glucose Sesquistearate",
+    "percent_estimate": 0.74573863636364
+   },
+   {
+    "id": "en:dicaprylyl-carbonate",
+    "text": "Dicaprylyl Carbonate",
+    "percent_estimate": 0.37286931818182
+   },
+   {
+    "id": "en:e422",
+    "text": "Glycerin",
+    "percent_estimate": 0.186434659090907
+   },
+   {
+    "id": "en:propanediol",
+    "text": "Propanediol",
+    "percent_estimate": 0.0932173295454533
+   },
+   {
+    "id": "en:cider-vinegar",
+    "text": "Apple Cider Vinegar",
+    "percent_estimate": 0.0466086647727266
+   },
+   {
+    "id": "en:pentaerythrityl-distearate",
+    "text": "Pentaerythrityl Distearate",
+    "percent_estimate": 0.0233043323863598
+   },
+   {
+    "id": "en:betaine",
+    "text": "Betaine",
+    "percent_estimate": 0.0116521661931799
+   },
+   {
+    "id": "en:methyl-methacrylate-crosspolymer",
+    "text": "Methyl Methacrylate Crosspolymer",
+    "percent_estimate": 0.00582608309659349
+   },
+   {
+    "id": "en:e211",
+    "text": "Sodium Benzoate",
+    "percent_estimate": 0.00291304154829675
+   },
+   {
+    "id": "en:e202",
+    "text": "Potassium Sorbate",
+    "percent_estimate": 0.00145652077414837
+   },
+   {
+    "id": "en:diethylhexyl-carbonate",
+    "text": "Diethylhexyl Carbonate",
+    "percent_estimate": 0.000728260387077739
+   },
+   {
+    "id": "en:e415",
+    "text": "Xanthan Gum",
+    "percent_estimate": 0.00036413019353887
+   },
+   {
+    "id": "en:acrylates",
+    "text": "Acrylates",
+    "percent_estimate": 0.000182065096765882
+   },
+   {
+    "id": "en:c10-30-alkyl-acrylate-cross-polymer",
+    "text": "C10-30 Alkyl Acrylate Cross Polymer",
+    "percent_estimate": 9.10325483829411e-05
+   },
+   {
+    "id": "en:natural-fragrance",
+    "text": "Natural Fragrance",
+    "percent_estimate": 4.55162741914705e-05
+   },
+   {
+    "id": "en:read-more-on-how-to-read-an-ingredient-list",
+    "text": "Read more on\u00a0how to read an ingredient list >>",
+    "percent_estimate": 4.55162741843651e-05
+   }
+  ],
+  "states_tags": [
+   "en:to-be-completed",
+   "en:nutrition-facts-to-be-completed",
+   "en:ingredients-completed",
+   "en:expiration-date-to-be-completed",
+   "en:packaging-code-to-be-completed",
+   "en:characteristics-to-be-completed",
+   "en:origins-to-be-completed",
+   "en:categories-completed",
+   "en:brands-completed",
+   "en:packaging-to-be-completed",
+   "en:quantity-completed",
+   "en:product-name-completed",
+   "en:photos-to-be-validated",
+   "en:packaging-photo-to-be-selected",
+   "en:nutrition-photo-selected",
+   "en:ingredients-photo-selected",
+   "en:front-photo-to-be-selected",
+   "en:photos-uploaded"
+  ]
+ }
+}

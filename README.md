@@ -2,7 +2,18 @@
 
 **Beauty, aloud.** A voice-first skincare assistant that lets a blind or low-vision person shop for skincare and understand their own skin independently, with the screen off.
 
-Built for the YouCam API Skin AI & Apparel VTO Hackathon (Skin AI topic).
+**Live:** https://aloudbeauty.vercel.app · Built for the YouCam API Skin AI & Apparel VTO Hackathon (Skin AI topic).
+
+## How it works (the four flows)
+
+1. **Talk** (`/talk`): a hands-free voice conversation over WebRTC (OpenAI Realtime). The model calls real tools: EU CosIng ingredient lookup, EU fragrance-allergen check, and barcode product lookup. Every reply is mirrored as text.
+2. **Scan** (`/scan`): beep-guided barcode finding, then a layered spoken read: product identity, allergen status in what-the-label-lists language, marquee-ingredient functions, full list on request, free-form follow-up questions.
+3. **Know your skin** (`/capture`): audio-guided non-visual selfie framing (tonal hot-cold cues, steadiness hold, lighting gate, auto-capture), then a spoken read grounded only in the YouCam AI Skin Analysis structured scores, with honest uncertainty.
+4. **Verify a look** (`/verify`): after makeup, the same guided capture compares scores against the session's bare-skin baseline and speaks the deltas, with the uncertainty stated plainly.
+
+## YouCam API integration (the call flow)
+
+`app/api/skin` registers the image with `POST /s2s/v2.0/file/skin-analysis`, PUTs the bytes to the presigned URL, creates the task with `POST /s2s/v2.0/task/skin-analysis` (SD concerns, `format: json`), and the client polls `GET /s2s/v2.0/task/skin-analysis/{task_id}` through a thin proxy. The Bearer key lives only in server env; response shapes and error tuples are pinned by live-captured fixtures in `tests/fixtures/youcam/`. Every spoken skin statement traces to a `ui_score`; the face image never goes to a general vision model.
 
 ## The problem
 

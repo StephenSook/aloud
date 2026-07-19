@@ -58,7 +58,7 @@ PENDING: `scripts/check-obf.ts` output table goes here once Stephen's real produ
 | EU CosIng table | **YES** | `data/cosing.json` (33,116 Active ingredients from the official EU search API) + `lib/cosing.ts` lookup/descriptions |
 | EU fragrance-allergen list | **YES** | `data/allergens.json` (91 INCI names, Reg 2023/1545 annex + legacy list) + `lib/allergens.ts` |
 | Agent tool loop (AI SDK) | **YES** | `app/api/agent/route.ts` (gpt-5-mini, tools: ingredientInfo / allergenCheck / productLookup); grounded claim-clean answer verified live on production 2026-07-19 |
-| OpenAI Realtime voice token | **YES** | `app/api/voice/token/route.ts` mints gpt-realtime-mini ephemeral secrets; HTTP 200 verified live on production. Full WebRTC voice session UI: not yet (Week 2 scope) |
+| OpenAI Realtime voice (full session) | **YES** | `components/VoiceSession.tsx` + `/talk` + `app/api/voice/token/route.ts`; live WebRTC session (tool calling + text mirroring) verified against PRODUCTION 2026-07-19, connected in 2.9s |
 | html5-qrcode | **YES** | `components/BarcodeScanner.tsx` via `/scan` (on-device decode pass pending Stephen's iPhone run) |
 
 Nothing gets claimed on a judged surface until its row says Wired: yes with a real file reference.

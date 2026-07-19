@@ -14,14 +14,22 @@ test("manual entry rejects a malformed barcode with spoken guidance", async ({ p
   await expect(page.getByTestId("live-region")).toContainText(/6 to 14 digits/i);
 });
 
-test("home links to both flows", async ({ page }) => {
+test("home links all four flows", async ({ page }) => {
   await page.goto("/");
+  await expect(page.getByRole("link", { name: /talk with aloud/i })).toHaveAttribute(
+    "href",
+    "/talk",
+  );
   await expect(page.getByRole("link", { name: /scan a product/i })).toHaveAttribute(
     "href",
     "/scan",
   );
-  await expect(page.getByRole("link", { name: /skin capture/i })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: /know your skin/i })).toHaveAttribute(
     "href",
     "/capture",
+  );
+  await expect(page.getByRole("link", { name: /verify your look/i })).toHaveAttribute(
+    "href",
+    "/verify",
   );
 });

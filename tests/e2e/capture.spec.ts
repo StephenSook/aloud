@@ -13,6 +13,6 @@ test("capture page presents consent before any camera use", async ({ page }) => 
 test("home links to the capture flow", async ({ page }) => {
   await page.goto("/");
   await expect(
-    page.getByRole("link", { name: /guided skin capture/i }),
+    page.getByRole("link", { name: /know your skin/i }),
   ).toHaveAttribute("href", "/capture");
 });

@@ -85,12 +85,12 @@ export default function VerifyPage() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-xl flex-col items-center gap-6 px-6 py-12">
-      <h1 className="text-3xl font-semibold tracking-tight">Verify your look</h1>
+      <h1 className="display text-4xl">Verify your look</h1>
       <LiveRegion message={announcement} assertive />
 
       {phase === "intro" && (
         <section className="flex flex-col items-center gap-5 text-center">
-          <p className="text-lg leading-8 text-zinc-700 dark:text-zinc-300">
+          <p className="text-lg leading-8 text-[var(--paper)]">
             After you apply makeup, Aloud photographs your face the same guided
             way and compares the analysis against your bare-skin capture from
             this session. You hear what changed, in plain numbers, with honest
@@ -98,7 +98,7 @@ export default function VerifyPage() {
           </p>
           <button
             type="button"
-            className="rounded-full bg-black px-8 py-4 text-lg font-medium text-white dark:bg-white dark:text-black"
+            className="btn-primary"
             onClick={() => {
               say(
                 "Camera starting. Same as before: hold the phone at arm's length and follow the beeps.",
@@ -125,7 +125,7 @@ export default function VerifyPage() {
           />
           <button
             type="button"
-            className="rounded-full border border-zinc-400 px-6 py-3 text-base"
+            className="btn-ghost"
             onClick={() => setPhase("intro")}
           >
             Cancel
@@ -134,7 +134,7 @@ export default function VerifyPage() {
       )}
 
       {phase === "analyzing" && (
-        <p className="text-lg text-zinc-700 dark:text-zinc-300">
+        <p className="text-lg text-[var(--paper)]">
           Analyzing your look. A few seconds.
         </p>
       )}
@@ -144,7 +144,7 @@ export default function VerifyPage() {
           <p className="text-lg leading-8">{verdict}</p>
           <button
             type="button"
-            className="rounded-full bg-black px-8 py-4 text-lg font-medium text-white dark:bg-white dark:text-black"
+            className="btn-primary"
             onClick={() => {
               say("Camera starting again.", true);
               setPhase("capturing");

@@ -22,7 +22,6 @@ type Phase = "consent" | "capturing" | "analyzing" | "done";
 type SkinOutput = {
   type: string;
   ui_score?: number;
-  score?: number;
 };
 
 /**
@@ -73,6 +72,18 @@ export default function CapturePage() {
             errorMessage?: string;
           };
           if (body.status === "success") {
+            try {
+              const scores: Record<string, number> = {};
+              for (const o of body.outputs ?? []) {
+                if (typeof o.ui_score === "number") scores[o.type] = o.ui_score;
+              }
+              sessionStorage.setItem(
+                "aloud:skinBaseline",
+                JSON.stringify({ capturedAt: Date.now(), scores }),
+              );
+            } catch {
+              // storage unavailable is fine; verify degrades honestly
+            }
             const text = `${speakResult(body.outputs ?? [])} Capture took ${captureSeconds} seconds.`;
             setVerdict(text);
             setAnnouncement(text);

@@ -32,6 +32,12 @@ export default function Home() {
           >
             Guided skin capture
           </a>
+          <a
+            href="/verify"
+            className="rounded-full border border-zinc-400 px-8 py-4 text-lg font-medium"
+          >
+            Verify your look
+          </a>
         </div>
         <LiveRegion message="Aloud. A voice-first skincare assistant. In active development." />
       </main>

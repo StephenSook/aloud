@@ -1,0 +1,24 @@
+name: Uptime
+
+# Judge-facing watchdog. Offset minutes (GitHub throttles */N and :00
+# schedules); a failed run triggers GitHub's built-in failure email.
+on:
+  schedule:
+    - cron: "9,39 * * * *"
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe production surfaces
+        run: |
+          set -e
+          for path in / /scan /capture /talk /verify; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "https://aloudbeauty.vercel.app$path")
+            echo "$path -> $code"
+            [ "$code" = "200" ] || exit 1
+          done
+          code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 20 "https://aloudbeauty.vercel.app/api/product/5060022308176")
+          echo "/api/product -> $code"
+          [ "$code" = "200" ] || exit 1

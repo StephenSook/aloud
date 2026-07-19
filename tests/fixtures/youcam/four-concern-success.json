@@ -1,0 +1,64 @@
+{
+  "status": 200,
+  "data": {
+    "error": null,
+    "results": {
+      "output": [
+        {
+          "ui_score": 70,
+          "mask_urls": [
+            "https://example.invalid/expired-presigned/e3cda12d-ab8f-4381-aeca-22be4ca23c09_oiliness_output.png"
+          ],
+          "raw_score": 56.37310028076172,
+          "type": "oiliness",
+          "url": null
+        },
+        {
+          "ui_score": 75,
+          "mask_urls": [
+            "https://example.invalid/expired-presigned/e3cda12d-ab8f-4381-aeca-22be4ca23c09_redness_output.png"
+          ],
+          "raw_score": 67.4981689453125,
+          "type": "redness",
+          "url": null
+        },
+        {
+          "ui_score": 77,
+          "mask_urls": [
+            "https://example.invalid/expired-presigned/e3cda12d-ab8f-4381-aeca-22be4ca23c09_texture_output.png"
+          ],
+          "raw_score": 71.11086249351501,
+          "type": "texture",
+          "url": null
+        },
+        {
+          "ui_score": 69,
+          "mask_urls": [
+            "https://example.invalid/expired-presigned/e3cda12d-ab8f-4381-aeca-22be4ca23c09_moisture_output.png"
+          ],
+          "raw_score": 46.92465662956238,
+          "type": "moisture",
+          "url": null
+        },
+        {
+          "score": 72.75,
+          "type": "all",
+          "url": null
+        },
+        {
+          "score": 48,
+          "type": "skin_age",
+          "url": null
+        },
+        {
+          "mask_urls": [
+            "https://example.invalid/expired-presigned/e3cda12d-ab8f-4381-aeca-22be4ca23c09_resize_image.jpg"
+          ],
+          "type": "resize_image",
+          "url": null
+        }
+      ]
+    },
+    "task_status": "success"
+  }
+}

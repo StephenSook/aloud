@@ -51,11 +51,12 @@ PENDING: `scripts/check-obf.ts` output table goes here once Stephen's real produ
 
 | Claim | Wired? | Evidence (import/call in shipped code) |
 |---|---|---|
-| YouCam AI Skin Analysis API | Not yet | lib/youcam.ts (planned) |
-| Open Beauty Facts | Not yet | lib/openbeautyfacts.ts (planned) |
+| YouCam AI Skin Analysis API | **YES** | `lib/youcam.ts` (register/PUT/task/poll) via `app/api/skin`; live production run 2026-07-19: task on aloudbeauty.vercel.app returned redness 75 / oiliness 70 / texture 77 / moisture 69 (synthetic verification face, dev only) |
+| MediaPipe face detection | **YES** | `components/CameraCapture.tsx` (FaceDetector VIDEO mode, blaze_face_short_range) |
+| Non-visual audio guidance | **YES** | `lib/capture-guidance.ts` + `lib/audio-cues.ts` (tonal hot/cold + spoken cues + steadiness hold + lighting gate) |
+| Open Beauty Facts | Not yet | lib/openbeautyfacts.ts (planned; scripts/check-obf.ts already calls the live API) |
 | EU CosIng table | Not yet | data/cosing.json (planned) |
 | OpenAI Realtime voice | Not yet | app/api/voice/token (planned) |
-| MediaPipe face detection | Not yet | components/CameraCapture.tsx (planned) |
 | html5-qrcode | Not yet | components/BarcodeScanner.tsx (planned) |
 
 Nothing gets claimed on a judged surface until its row says Wired: yes with a real file reference.

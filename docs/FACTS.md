@@ -43,6 +43,14 @@ Company-reported figures are cited as "Perfect Corp reports", never as independe
 | Auth | **VERIFIED live 2026-07-18** | `Authorization: Bearer <API key>` works on v2.0 (secret key not needed for calls) |
 | Hackathon unit grant | VERIFIED | 1,000 units, 90-day validity from redemption; ~18 units spent on verification runs |
 
+## Week-1 capture kill experiment: PASSED (2026-07-19)
+
+On-device protocol run (real iPhone, Safari, production URL): **10 of 10
+attempts accepted by the YouCam analysis, all under 30 seconds** (1.6, 1.9,
+2.1, 2.4, 5.1, 7.0, 7.8, 8.2, 11.7, 24.1s; median ~6s). Gate was 7 of 10
+under 30s. Evidence: on-page attempt log screenshots, 2026-07-19. The
+non-visual capture pillar is confirmed on real hardware.
+
 ## Product set (Open Beauty Facts coverage)
 
 PENDING: `scripts/check-obf.ts` output table goes here once Stephen's real product barcodes are gathered.

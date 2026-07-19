@@ -13,12 +13,20 @@ export default function Home() {
           selfie without sight and hear an honest read of your skin. All with
           the screen off.
         </p>
-        <a
-          href="/capture"
-          className="rounded-full bg-black px-8 py-4 text-lg font-medium text-white dark:bg-white dark:text-black"
-        >
-          Try the guided skin capture
-        </a>
+        <div className="flex flex-col gap-4 sm:flex-row">
+          <a
+            href="/scan"
+            className="rounded-full bg-black px-8 py-4 text-lg font-medium text-white dark:bg-white dark:text-black"
+          >
+            Scan a product
+          </a>
+          <a
+            href="/capture"
+            className="rounded-full border border-zinc-400 px-8 py-4 text-lg font-medium"
+          >
+            Guided skin capture
+          </a>
+        </div>
         <LiveRegion message="Aloud. A voice-first skincare assistant. In active development." />
       </main>
     </div>

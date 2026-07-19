@@ -55,8 +55,11 @@ export function composeLookVerify(
     const delta = after - before;
     const spoken = DELTA_SPOKEN[concern];
     if (!spoken) continue;
-    if (delta >= 5) improved.push(`${spoken.covered}, from ${before} to ${after}`);
-    else if (delta <= -5) lower.push(`${spoken.axis} reads lower than before, ${before} down to ${after}`);
+    // Threshold calibrated 2026-07-19: the API is deterministic on identical
+    // input (repeat-run delta 0), and a controlled makeup edit moved scores
+    // +2 to +4, so +-3 separates signal from capture variance.
+    if (delta >= 3) improved.push(`${spoken.covered}, from ${before} to ${after}`);
+    else if (delta <= -3) lower.push(`${spoken.axis} reads lower than before, ${before} down to ${after}`);
     else unchanged.push(spoken.axis);
   }
 

@@ -13,7 +13,7 @@ describe("composeLookVerify", () => {
     const read = composeLookVerify(baseline, [
       { type: "redness", ui_score: 78 },
       { type: "texture", ui_score: 75 },
-      { type: "oiliness", ui_score: 71 },
+      { type: "oiliness", ui_score: 72 },
       { type: "moisture", ui_score: 70 },
     ]);
     expect(read).toMatch(/redness.*62 to 78/i);

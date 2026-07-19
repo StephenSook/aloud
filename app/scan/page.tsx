@@ -46,7 +46,19 @@ export default function ScanPage() {
         if (!res.ok) throw new Error(`lookup ${res.status}`);
         const body = (await res.json()) as ProductReadResponse;
         setRead(body.read);
-        setProductTitle(body.read.summary.split(".")[0] ?? "");
+        const title = body.read.summary.split(".")[0] ?? "";
+        setProductTitle(title);
+        try {
+          sessionStorage.setItem(
+            "aloud:lastScan",
+            JSON.stringify({
+              title,
+              ingredients: body.read.fullList ? body.read.fullList.split(", ") : [],
+            }),
+          );
+        } catch {
+          // storage unavailable is fine; voice just starts without context
+        }
         setPhase("result");
         say(body.read.summary, true);
       } catch (err) {

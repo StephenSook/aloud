@@ -1,8 +1,22 @@
 @import "tailwindcss";
 
+/*
+ * Aloud design tokens: warm ink, aged paper, gold. A committed dark
+ * editorial look (one theme, deliberately), serif display, and a voice
+ * waveform as the brand mark. Contrast: paper on ink ~15:1, gold on ink
+ * ~7.5:1, ink on gold ~7.5:1; all AA or better.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ink: #0d0a08;
+  --ink-soft: #171310;
+  --paper: #e8e2d9;
+  --paper-dim: #b3aca0;
+  --gold: #c9a227;
+  --gold-soft: #8a6f1c;
+  --line: #2b2621;
+
+  --background: var(--ink);
+  --foreground: var(--paper);
 }
 
 @theme inline {
@@ -10,17 +24,137 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-fraunces);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(120% 90% at 50% 0%, #171310 0%, var(--ink) 55%),
+    var(--ink);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), sans-serif;
+  min-height: 100vh;
+}
+
+::selection {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Display serif for headings and the wordmark */
+.display {
+  font-family: var(--font-fraunces), serif;
+  font-weight: 550;
+  letter-spacing: -0.015em;
+}
+
+/* Buttons */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--gold);
+  color: var(--ink);
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background 0.25s;
+}
+.btn-primary:hover {
+  background: #d9b23a;
+  transform: translateY(-1px);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  color: var(--paper);
+  padding: 1rem 2rem;
+  font-size: 1.125rem;
+  font-weight: 500;
+  transition: border-color 0.25s, color 0.25s, transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.btn-ghost:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+  transform: translateY(-1px);
+}
+
+/* Hairlines and cards */
+.hairline {
+  border-color: var(--line);
+}
+.flow-card {
+  display: block;
+  border-top: 1px solid var(--line);
+  padding: 1.75rem 0.25rem;
+  transition: padding-left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.flow-card:hover {
+  padding-left: 1rem;
+}
+.flow-card:hover .flow-title {
+  color: var(--gold);
+}
+.flow-title {
+  transition: color 0.35s;
+}
+
+/* The voice waveform brand mark: five gold bars that murmur. */
+.waveform {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 18px;
+}
+.waveform span {
+  width: 3px;
+  border-radius: 2px;
+  background: var(--gold);
+  height: 30%;
+  animation: murmur 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+.waveform span:nth-child(1) { animation-delay: 0s; }
+.waveform span:nth-child(2) { animation-delay: 0.18s; }
+.waveform span:nth-child(3) { animation-delay: 0.36s; }
+.waveform span:nth-child(4) { animation-delay: 0.54s; }
+.waveform span:nth-child(5) { animation-delay: 0.72s; }
+@keyframes murmur {
+  0%, 100% { height: 30%; }
+  50% { height: 100%; }
+}
+
+/* Staggered page-load reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(14px);
+  animation: rise 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+.reveal-1 { animation-delay: 0.05s; }
+.reveal-2 { animation-delay: 0.18s; }
+.reveal-3 { animation-delay: 0.31s; }
+.reveal-4 { animation-delay: 0.44s; }
+.reveal-5 { animation-delay: 0.57s; }
+@keyframes rise {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waveform span { animation: none; height: 65%; }
+  .reveal { opacity: 1; transform: none; animation: none; }
+  .btn-primary, .btn-ghost, .flow-card { transition: none; }
 }

@@ -161,19 +161,19 @@ export default function ScanPage() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-xl flex-col items-center gap-6 px-6 py-12">
-      <h1 className="text-3xl font-semibold tracking-tight">Scan a product</h1>
+      <h1 className="display text-4xl">Scan a product</h1>
       <LiveRegion message={announcement} assertive />
 
       {phase === "intro" && (
         <section className="flex w-full flex-col items-center gap-5 text-center">
-          <p className="text-lg leading-8 text-zinc-700 dark:text-zinc-300">
+          <p className="text-lg leading-8 text-[var(--paper)]">
             Aloud will open the back camera and guide you by sound to find the
             barcode, then read the product and its ingredients out loud. You
             can also type the barcode number instead.
           </p>
           <button
             type="button"
-            className="rounded-full bg-black px-8 py-4 text-lg font-medium text-white dark:bg-white dark:text-black"
+            className="btn-primary"
             onClick={() => {
               say("Camera starting.", true);
               setPhase("scanning");
@@ -198,11 +198,11 @@ export default function ScanPage() {
               placeholder="Type barcode number"
               value={manualCode}
               onChange={(e) => setManualCode(e.target.value.trim())}
-              className="w-full rounded-full border border-zinc-400 px-5 py-3 text-base dark:bg-zinc-900"
+              className="w-full rounded-full border hairline bg-[var(--ink-soft)] px-5 py-3 text-base"
             />
             <button
               type="submit"
-              className="rounded-full border border-zinc-400 px-5 py-3 text-base"
+              className="btn-ghost"
             >
               Look up
             </button>
@@ -215,7 +215,7 @@ export default function ScanPage() {
                   <li key={h.barcode}>
                     <button
                       type="button"
-                      className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-left text-base dark:border-zinc-700"
+                      className="w-full rounded-xl border hairline px-4 py-3 text-left text-base"
                       onClick={() => void lookUp(h.barcode)}
                     >
                       {h.title || h.barcode}
@@ -240,7 +240,7 @@ export default function ScanPage() {
           />
           <button
             type="button"
-            className="rounded-full border border-zinc-400 px-6 py-3 text-base"
+            className="btn-ghost"
             onClick={() => setPhase("intro")}
           >
             Cancel
@@ -249,7 +249,7 @@ export default function ScanPage() {
       )}
 
       {phase === "looking_up" && (
-        <p className="text-lg text-zinc-700 dark:text-zinc-300">Looking that up.</p>
+        <p className="text-lg text-[var(--paper)]">Looking that up.</p>
       )}
 
       {phase === "result" && read && (
@@ -267,7 +267,7 @@ export default function ScanPage() {
               <summary className="cursor-pointer py-2 text-lg font-medium">
                 Read the full ingredient list
               </summary>
-              <p className="text-base leading-7 text-zinc-600 dark:text-zinc-400">
+              <p className="text-base leading-7 text-[var(--paper-dim)]">
                 {read.fullList}
               </p>
             </details>
@@ -287,12 +287,12 @@ export default function ScanPage() {
               placeholder="Ask, like: what does glycerin do?"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
-              className="w-full rounded-full border border-zinc-400 px-5 py-3 text-base dark:bg-zinc-900"
+              className="w-full rounded-full border hairline bg-[var(--ink-soft)] px-5 py-3 text-base"
             />
             <button
               type="submit"
               disabled={asking}
-              className="rounded-full border border-zinc-400 px-5 py-3 text-base disabled:opacity-50"
+              className="btn-ghost disabled:opacity-50"
             >
               Ask
             </button>
@@ -301,7 +301,7 @@ export default function ScanPage() {
           <div className="flex flex-col gap-3 sm:flex-row">
             <button
               type="button"
-              className="rounded-full bg-black px-8 py-4 text-lg font-medium text-white dark:bg-white dark:text-black"
+              className="btn-primary"
               onClick={() => {
                 setRead(null);
                 setAnswer("");
@@ -315,7 +315,7 @@ export default function ScanPage() {
             {lastBarcode && (
               <button
                 type="button"
-                className="rounded-full border border-zinc-400 px-8 py-4 text-lg font-medium"
+                className="btn-ghost"
                 onClick={() => {
                   setCompareWith(lastBarcode);
                   setRead(null);

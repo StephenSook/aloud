@@ -116,12 +116,12 @@ export default function CapturePage() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-xl flex-col items-center gap-6 px-6 py-12">
-      <h1 className="text-3xl font-semibold tracking-tight">Skin capture</h1>
+      <h1 className="display text-4xl">Skin capture</h1>
       <LiveRegion message={announcement} assertive />
 
       {phase === "consent" && (
         <section className="flex flex-col items-center gap-5 text-center">
-          <p className="text-lg leading-8 text-zinc-700 dark:text-zinc-300">
+          <p className="text-lg leading-8 text-[var(--paper)]">
             Aloud will open the front camera and guide you by sound to frame
             your face, then send one photo to a skin analysis service. The
             photo is processed for this session only. Nothing is saved, and
@@ -129,7 +129,7 @@ export default function CapturePage() {
           </p>
           <button
             type="button"
-            className="rounded-full bg-black px-8 py-4 text-lg font-medium text-white dark:bg-white dark:text-black"
+            className="btn-primary"
             onClick={() => {
               attemptStart.current = performance.now();
               setAnnouncement(
@@ -157,7 +157,7 @@ export default function CapturePage() {
           />
           <button
             type="button"
-            className="rounded-full border border-zinc-400 px-6 py-3 text-base"
+            className="btn-ghost"
             onClick={() => {
               logAttempt(null, "cancelled");
               setPhase("consent");
@@ -169,7 +169,7 @@ export default function CapturePage() {
       )}
 
       {phase === "analyzing" && (
-        <p className="text-lg text-zinc-700 dark:text-zinc-300">
+        <p className="text-lg text-[var(--paper)]">
           Analyzing the photo. This takes a few seconds.
         </p>
       )}
@@ -179,7 +179,7 @@ export default function CapturePage() {
           <p className="text-lg leading-8">{verdict}</p>
           <button
             type="button"
-            className="rounded-full bg-black px-8 py-4 text-lg font-medium text-white dark:bg-white dark:text-black"
+            className="btn-primary"
             onClick={() => {
               attemptStart.current = performance.now();
               setAnnouncement("Camera starting again.");
@@ -194,7 +194,7 @@ export default function CapturePage() {
       {attempts.length > 0 && (
         <section aria-label="Attempt log" className="w-full">
           <h2 className="text-xl font-medium">Attempt log</h2>
-          <ol className="mt-2 flex flex-col gap-1 text-base text-zinc-600 dark:text-zinc-400">
+          <ol className="mt-2 flex flex-col gap-1 text-base text-[var(--paper-dim)]">
             {attempts.map((a) => (
               <li key={a.n}>
                 Attempt {a.n}: {a.seconds !== null ? `${a.seconds}s, ` : ""}

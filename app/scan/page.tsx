@@ -22,6 +22,16 @@ type ProductReadResponse = {
  * read -> drill-in (full list, follow-up questions through the agent).
  * Manual barcode entry is a first-class path, not a hidden fallback.
  */
+type HistoryEntry = { barcode: string; title: string; at: number };
+
+function readHistory(): HistoryEntry[] {
+  try {
+    return JSON.parse(localStorage.getItem("aloud:history") ?? "[]") as HistoryEntry[];
+  } catch {
+    return [];
+  }
+}
+
 export default function ScanPage() {
   const [phase, setPhase] = useState<Phase>("intro");
   const [announcement, setAnnouncement] = useState("");
@@ -31,14 +41,51 @@ export default function ScanPage() {
   const [question, setQuestion] = useState("");
   const [asking, setAsking] = useState(false);
   const [answer, setAnswer] = useState("");
+  const [lastBarcode, setLastBarcode] = useState("");
+  const [compareWith, setCompareWith] = useState("");
+  const [history, setHistory] = useState<HistoryEntry[]>(() =>
+    typeof window === "undefined" ? [] : readHistory(),
+  );
 
   const say = useCallback((text: string, force = false) => {
     setAnnouncement(text);
     speakCue(text, force);
   }, []);
 
+  const compare = useCallback(
+    async (a: string, b: string) => {
+      setPhase("looking_up");
+      say("Comparing the two products.", true);
+      try {
+        const res = await fetch(
+          `/api/compare?a=${encodeURIComponent(a)}&b=${encodeURIComponent(b)}`,
+        );
+        if (!res.ok) throw new Error(`compare ${res.status}`);
+        const body = (await res.json()) as { spoken: string };
+        setRead({ summary: body.spoken, fullList: null });
+        setPhase("result");
+        say(body.spoken, true);
+      } catch (err) {
+        console.error(err);
+        setPhase("result");
+        setRead({
+          summary: "The comparison did not go through. Check the connection and try again.",
+          fullList: null,
+        });
+        say("The comparison did not go through. Check the connection and try again.", true);
+      } finally {
+        setCompareWith("");
+      }
+    },
+    [say],
+  );
+
   const lookUp = useCallback(
     async (barcode: string) => {
+      if (compareWith && compareWith !== barcode) {
+        await compare(compareWith, barcode);
+        return;
+      }
       setPhase("looking_up");
       say("Looking that up.", true);
       try {
@@ -48,6 +95,7 @@ export default function ScanPage() {
         setRead(body.read);
         const title = body.read.summary.split(".")[0] ?? "";
         setProductTitle(title);
+        setLastBarcode(barcode);
         try {
           sessionStorage.setItem(
             "aloud:lastScan",
@@ -56,6 +104,14 @@ export default function ScanPage() {
               ingredients: body.read.fullList ? body.read.fullList.split(", ") : [],
             }),
           );
+          if (body.status === "found") {
+            const next = [
+              { barcode, title, at: Date.now() },
+              ...readHistory().filter((h) => h.barcode !== barcode),
+            ].slice(0, 20);
+            localStorage.setItem("aloud:history", JSON.stringify(next));
+            setHistory(next);
+          }
         } catch {
           // storage unavailable is fine; voice just starts without context
         }
@@ -72,7 +128,7 @@ export default function ScanPage() {
         say("The product database did not respond. Check the connection and try again.", true);
       }
     },
-    [say],
+    [say, compareWith, compare],
   );
 
   const ask = useCallback(async () => {
@@ -151,6 +207,24 @@ export default function ScanPage() {
               Look up
             </button>
           </form>
+          {history.length > 0 && (
+            <section aria-label="Recent scans" className="w-full max-w-sm text-left">
+              <h2 className="text-lg font-medium">Recent scans</h2>
+              <ul className="mt-2 flex flex-col gap-1">
+                {history.slice(0, 5).map((h) => (
+                  <li key={h.barcode}>
+                    <button
+                      type="button"
+                      className="w-full rounded-xl border border-zinc-300 px-4 py-3 text-left text-base dark:border-zinc-700"
+                      onClick={() => void lookUp(h.barcode)}
+                    >
+                      {h.title || h.barcode}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
         </section>
       )}
 
@@ -224,19 +298,40 @@ export default function ScanPage() {
             </button>
           </form>
           {answer && <p className="text-base leading-7">{answer}</p>}
-          <button
-            type="button"
-            className="rounded-full bg-black px-8 py-4 text-lg font-medium text-white dark:bg-white dark:text-black"
-            onClick={() => {
-              setRead(null);
-              setAnswer("");
-              setQuestion("");
-              say("Ready to scan another product.", true);
-              setPhase("scanning");
-            }}
-          >
-            Scan another product
-          </button>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <button
+              type="button"
+              className="rounded-full bg-black px-8 py-4 text-lg font-medium text-white dark:bg-white dark:text-black"
+              onClick={() => {
+                setRead(null);
+                setAnswer("");
+                setQuestion("");
+                say("Ready to scan another product.", true);
+                setPhase("scanning");
+              }}
+            >
+              Scan another product
+            </button>
+            {lastBarcode && (
+              <button
+                type="button"
+                className="rounded-full border border-zinc-400 px-8 py-4 text-lg font-medium"
+                onClick={() => {
+                  setCompareWith(lastBarcode);
+                  setRead(null);
+                  setAnswer("");
+                  setQuestion("");
+                  say(
+                    "Scan the second product now, and I will compare the two labels.",
+                    true,
+                  );
+                  setPhase("scanning");
+                }}
+              >
+                Compare with another
+              </button>
+            )}
+          </div>
         </section>
       )}
     </main>

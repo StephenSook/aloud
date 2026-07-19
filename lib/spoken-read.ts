@@ -97,3 +97,60 @@ export function composeProductRead(lookup: ProductLookup): ProductRead {
 }
 
 export { composeSkinRead } from "@/lib/skin-read";
+
+/**
+ * Two-product spoken comparison: identity, fragrance and allergen contrast,
+ * shared and distinct marquee ingredients. Appearance language only; the
+ * assistant contrasts labels, it never ranks products as better or worse.
+ */
+export function composeComparisonRead(a: ProductLookup, b: ProductLookup): string {
+  if (a.status !== "found" || b.status !== "found") {
+    return "I need both products' ingredient lists to compare them, and one of them is not in the database. We can read the missing label with the camera instead.";
+  }
+  const nameA = [a.brand, a.name].filter(Boolean).join(" ") || "the first product";
+  const nameB = [b.brand, b.name].filter(Boolean).join(" ") || "the second product";
+  const namesA = a.ingredients.length > 0 ? a.ingredients.map((i) => i.text) : splitIngredientsText(a.ingredientsText);
+  const namesB = b.ingredients.length > 0 ? b.ingredients.map((i) => i.text) : splitIngredientsText(b.ingredientsText);
+
+  const allergensA = findListedAllergens(namesA);
+  const allergensB = findListedAllergens(namesB);
+
+  const parts: string[] = [`Comparing ${nameA} with ${nameB}.`];
+
+  if (allergensA.length === 0 && allergensB.length === 0) {
+    parts.push("Neither label lists an EU-flagged fragrance allergen.");
+  } else if (allergensA.length > 0 && allergensB.length === 0) {
+    parts.push(
+      `${nameA} lists ${allergensA.slice(0, 3).map(titleCase).join(", ")}${allergensA.length > 3 ? " and more" : ""}, which the EU flags as fragrance allergens. ${nameB} lists none.`,
+    );
+  } else if (allergensA.length === 0 && allergensB.length > 0) {
+    parts.push(
+      `${nameB} lists ${allergensB.slice(0, 3).map(titleCase).join(", ")}${allergensB.length > 3 ? " and more" : ""}, which the EU flags as fragrance allergens. ${nameA} lists none.`,
+    );
+  } else {
+    parts.push(
+      `Both list EU-flagged fragrance allergens: ${allergensA.length} in the first, ${allergensB.length} in the second.`,
+    );
+  }
+
+  const setA = new Set(namesA.map((n) => n.trim().toUpperCase()));
+  const setB = new Set(namesB.map((n) => n.trim().toUpperCase()));
+  const sharedMarquee = [...MARQUEE].filter((m) => setA.has(m) && setB.has(m));
+  const onlyA = [...MARQUEE].filter((m) => setA.has(m) && !setB.has(m));
+  const onlyB = [...MARQUEE].filter((m) => setB.has(m) && !setA.has(m));
+
+  if (sharedMarquee.length > 0) {
+    parts.push(`Both lists include ${sharedMarquee.map(titleCase).join(", ")}.`);
+  }
+  if (onlyA.length > 0) {
+    parts.push(`Only ${nameA} lists ${onlyA.map(titleCase).join(", ")}.`);
+  }
+  if (onlyB.length > 0) {
+    parts.push(`Only ${nameB} lists ${onlyB.map(titleCase).join(", ")}.`);
+  }
+
+  parts.push(
+    `${namesA.length} ingredients versus ${namesB.length}. I compare what the labels list, and the choice stays yours. Ask me about any ingredient by name.`,
+  );
+  return parts.join(" ");
+}

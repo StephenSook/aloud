@@ -63,6 +63,59 @@ export class Beeper {
   }
 }
 
+/**
+ * One-shot earcons: short, distinct sounds that carry meaning without words,
+ * so a screen-reader user hears the outcome before the sentence starts. Each
+ * creates a short-lived AudioContext (must be called from a user gesture chain
+ * on iOS). Kept low and brief so they never fight the spoken read.
+ */
+function tone(ctx: AudioContext, freq: number, start: number, duration: number, gainPeak = 0.12) {
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.frequency.value = freq;
+  osc.type = "sine";
+  const t = ctx.currentTime + start;
+  gain.gain.setValueAtTime(0.0001, t);
+  gain.gain.exponentialRampToValueAtTime(gainPeak, t + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + duration + 0.02);
+}
+
+function withContext(play: (ctx: AudioContext) => void) {
+  if (typeof window === "undefined" || !("AudioContext" in window)) return;
+  try {
+    const ctx = new AudioContext();
+    void ctx.resume();
+    play(ctx);
+    setTimeout(() => void ctx.close(), 1200);
+  } catch {
+    // audio unavailable is fine; the spoken read still conveys everything
+  }
+}
+
+export const earcons = {
+  /** Product found: a bright rising two-note. */
+  found: () =>
+    withContext((ctx) => {
+      tone(ctx, 587, 0, 0.1);
+      tone(ctx, 880, 0.1, 0.16);
+    }),
+  /** Allergen or caution: a soft doubled mid tone, a heads-up not an alarm. */
+  warn: () =>
+    withContext((ctx) => {
+      tone(ctx, 392, 0, 0.12, 0.13);
+      tone(ctx, 392, 0.18, 0.12, 0.13);
+    }),
+  /** Not found: a gentle descending pair. */
+  miss: () =>
+    withContext((ctx) => {
+      tone(ctx, 523, 0, 0.12);
+      tone(ctx, 392, 0.13, 0.18);
+    }),
+};
+
 let lastSpoken = "";
 let lastSpokenAt = 0;
 

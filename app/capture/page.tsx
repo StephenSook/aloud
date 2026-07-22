@@ -29,11 +29,14 @@ type SkinOutput = {
  * YouCam analysis -> spoken verdict, with a running attempt log so ten
  * blindfolded tries can be recorded against the <30s gate.
  */
+type SkinResult = { status: string; outputs?: SkinOutput[]; errorMessage?: string };
+
 export default function CapturePage() {
   const [phase, setPhase] = useState<Phase>("consent");
   const [announcement, setAnnouncement] = useState("");
   const [attempts, setAttempts] = useState<Attempt[]>([]);
   const [verdict, setVerdict] = useState("");
+  const [engine, setEngine] = useState<"rest" | "mcp">("rest");
   const attemptStart = useRef(0);
   const attemptCount = useRef(0);
 
@@ -45,9 +48,35 @@ export default function CapturePage() {
     ]);
   }, []);
 
-  const speakResult = useCallback(
-    (outputs: SkinOutput[]) => composeSkinRead(outputs),
-    [],
+  const finish = useCallback(
+    (result: SkinResult, captureSeconds: number, via: "rest" | "mcp") => {
+      if (result.status === "success") {
+        try {
+          const scores: Record<string, number> = {};
+          for (const o of result.outputs ?? []) {
+            if (typeof o.ui_score === "number") scores[o.type] = o.ui_score;
+          }
+          sessionStorage.setItem(
+            "aloud:skinBaseline",
+            JSON.stringify({ capturedAt: Date.now(), scores }),
+          );
+        } catch {
+          // storage unavailable is fine; verify degrades honestly
+        }
+        const route = via === "mcp" ? " Analyzed through Perfect Corp's MCP server." : "";
+        const text = `${composeSkinRead(result.outputs ?? [])} Capture took ${captureSeconds} seconds.${route}`;
+        setVerdict(text);
+        setAnnouncement(text);
+        logAttempt(captureSeconds, via === "mcp" ? "accepted (via MCP)" : "accepted");
+      } else {
+        const text = `The photo was not accepted: ${result.errorMessage ?? "unknown reason"}. This is about the photo, not you. Let us try again.`;
+        setVerdict(text);
+        setAnnouncement(text);
+        logAttempt(captureSeconds, `rejected: ${result.errorMessage ?? "unknown"}`);
+      }
+      setPhase("done");
+    },
+    [logAttempt],
   );
 
   const analyze = useCallback(
@@ -57,46 +86,30 @@ export default function CapturePage() {
       try {
         const form = new FormData();
         form.append("image", new File([blob], "capture.jpg", { type: "image/jpeg" }));
+        form.append("engine", engine);
         const created = await fetch("/api/skin", { method: "POST", body: form });
         if (!created.ok) throw new Error(`create failed ${created.status}`);
-        const { taskId } = (await created.json()) as { taskId: string };
+        const body = (await created.json()) as {
+          engine?: string;
+          taskId?: string;
+          result?: SkinResult;
+        };
 
+        // MCP path returns the full result synchronously.
+        if (body.result) {
+          finish(body.result, captureSeconds, "mcp");
+          return;
+        }
+
+        const taskId = body.taskId!;
         const deadline = Date.now() + 60_000;
         while (Date.now() < deadline) {
           await new Promise((resolve) => setTimeout(resolve, 1500));
           const res = await fetch(`/api/skin/${encodeURIComponent(taskId)}`);
           if (!res.ok) throw new Error(`poll failed ${res.status}`);
-          const body = (await res.json()) as {
-            status: string;
-            outputs?: SkinOutput[];
-            errorMessage?: string;
-          };
-          if (body.status === "success") {
-            try {
-              const scores: Record<string, number> = {};
-              for (const o of body.outputs ?? []) {
-                if (typeof o.ui_score === "number") scores[o.type] = o.ui_score;
-              }
-              sessionStorage.setItem(
-                "aloud:skinBaseline",
-                JSON.stringify({ capturedAt: Date.now(), scores }),
-              );
-            } catch {
-              // storage unavailable is fine; verify degrades honestly
-            }
-            const text = `${speakResult(body.outputs ?? [])} Capture took ${captureSeconds} seconds.`;
-            setVerdict(text);
-            setAnnouncement(text);
-            logAttempt(captureSeconds, "accepted");
-            setPhase("done");
-            return;
-          }
-          if (body.status === "error") {
-            const text = `The photo was not accepted: ${body.errorMessage ?? "unknown reason"}. This is about the photo, not you. Let us try again.`;
-            setVerdict(text);
-            setAnnouncement(text);
-            logAttempt(captureSeconds, `rejected: ${body.errorMessage ?? "unknown"}`);
-            setPhase("done");
+          const result = (await res.json()) as SkinResult;
+          if (result.status === "success" || result.status === "error") {
+            finish(result, captureSeconds, "rest");
             return;
           }
         }
@@ -111,7 +124,7 @@ export default function CapturePage() {
         setPhase("done");
       }
     },
-    [logAttempt, speakResult],
+    [engine, finish, logAttempt],
   );
 
   return (
@@ -140,6 +153,28 @@ export default function CapturePage() {
           >
             I agree, start the camera
           </button>
+          <fieldset className="mt-2 flex items-center gap-3 text-sm text-[var(--paper-dim)]">
+            <legend className="sr-only">Analysis engine</legend>
+            <span aria-hidden="true">Engine:</span>
+            <label className="flex items-center gap-1">
+              <input
+                type="radio"
+                name="engine"
+                checked={engine === "rest"}
+                onChange={() => setEngine("rest")}
+              />
+              REST
+            </label>
+            <label className="flex items-center gap-1">
+              <input
+                type="radio"
+                name="engine"
+                checked={engine === "mcp"}
+                onChange={() => setEngine("mcp")}
+              />
+              Perfect Corp MCP
+            </label>
+          </fieldset>
         </section>
       )}
 

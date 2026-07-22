@@ -9,6 +9,20 @@ import { findListedAllergens, listsFragrance } from "@/lib/allergens";
 import { splitIngredientsText, type ProductLookup } from "@/lib/openbeautyfacts";
 import { titleCase } from "@/lib/cosing";
 
+/**
+ * Build a clean spoken title. Open Beauty Facts often repeats the brand inside
+ * the product name ("Nivea" + "Nivea creme"), so drop the brand prefix when
+ * the product name already starts with it.
+ */
+function productTitle(brand: string, name: string): string {
+  const b = brand.trim();
+  const n = name.trim();
+  if (!b) return n;
+  if (!n) return b;
+  if (n.toLowerCase().startsWith(b.toLowerCase())) return n;
+  return `${b} ${n}`;
+}
+
 /** Ingredients shoppers ask about by name; lead the highlights with these. */
 const MARQUEE = new Set([
   "NIACINAMIDE",
@@ -44,7 +58,7 @@ export function composeProductRead(lookup: ProductLookup): ProductRead {
     };
   }
 
-  const title = [lookup.brand, lookup.name].filter(Boolean).join(" ") || "This product";
+  const title = productTitle(lookup.brand, lookup.name) || "This product";
 
   if (lookup.status === "no_ingredients") {
     return {
@@ -107,8 +121,8 @@ export function composeComparisonRead(a: ProductLookup, b: ProductLookup): strin
   if (a.status !== "found" || b.status !== "found") {
     return "I need both products' ingredient lists to compare them, and one of them is not in the database. We can read the missing label with the camera instead.";
   }
-  const nameA = [a.brand, a.name].filter(Boolean).join(" ") || "the first product";
-  const nameB = [b.brand, b.name].filter(Boolean).join(" ") || "the second product";
+  const nameA = productTitle(a.brand, a.name) || "the first product";
+  const nameB = productTitle(b.brand, b.name) || "the second product";
   const namesA = a.ingredients.length > 0 ? a.ingredients.map((i) => i.text) : splitIngredientsText(a.ingredientsText);
   const namesB = b.ingredients.length > 0 ? b.ingredients.map((i) => i.text) : splitIngredientsText(b.ingredientsText);
 

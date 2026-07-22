@@ -51,9 +51,21 @@ attempts accepted by the YouCam analysis, all under 30 seconds** (1.6, 1.9,
 under 30s. Evidence: on-page attempt log screenshots, 2026-07-19. The
 non-visual capture pillar is confirmed on real hardware.
 
-## Product set (Open Beauty Facts coverage)
+## Demo product set (verified live through production /api/product, 2026-07-19)
 
-PENDING: `scripts/check-obf.ts` output table goes here once Stephen's real product barcodes are gathered.
+Each returns `status: found` with a full spoken read on aloudbeauty.vercel.app.
+Chosen to cover every narrative beat:
+
+| Barcode | Product | Demo beat |
+|---|---|---|
+| 3606000537743 | CeraVe Daily Moisturizing Cream | fragrance-free |
+| 3337875743563 | CeraVe Hydrating Cream-to-Foam Cleanser | fragrance-free |
+| 3499320015431 | Cetaphil Gentle Skin Cleanser | fragrance-free |
+| 0769915195712 | The Ordinary Caffeine Solution | one flagged allergen (Benzyl Alcohol) |
+| 3337875863377 | La Roche-Posay Effaclar Duo+ | fragrance listed, no named allergens |
+| 3414090801329 | Nivea Creme | 7 EU-flagged allergens (Limonene, Geraniol, ...) |
+
+Any product not in Open Beauty Facts speaks the designed camera-and-manual fallback.
 
 ## Wired integrations (claim-parity ledger, updated as built)
 

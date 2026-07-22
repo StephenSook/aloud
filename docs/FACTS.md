@@ -81,5 +81,7 @@ Any product not in Open Beauty Facts speaks the designed camera-and-manual fallb
 | OpenAI Realtime voice (full session) | **YES** | `components/VoiceSession.tsx` + `/talk` + `app/api/voice/token/route.ts`; live WebRTC session (tool calling + text mirroring) verified against PRODUCTION 2026-07-19, connected in 2.9s |
 | html5-qrcode | **YES** | `components/BarcodeScanner.tsx` via `/scan` (on-device decode pass pending Stephen's iPhone run) |
 | Perfect Corp native MCP server | **YES** | `lib/youcam-mcp.ts` via `/api/skin?engine=mcp` + capture-page toggle; a live `tools/call` to `mcp-api-01.makeupar.com/mcp` ran a real AI-Skin-Analysis and returned real ui_scores. Verified on PRODUCTION 2026-07-22 (redness 75 / oiliness 70 / texture 77 / moisture 69 via MCP) |
+| Skin-analysis heatmap masks | **YES** | capture page renders the API's per-concern `mask_urls` (redness/oiliness/moisture/texture) as a sighted-companion gallery; mask fetch + render verified 2026-07-22 |
+| Vision label reader (OBF-miss fallback) | **YES** | `app/api/label/route.ts` + `lib/label-read.ts` (gpt-5-mini vision -> INCI list -> same allergen/CosIng read). Verified on PRODUCTION 2026-07-22: read 13 ingredients off a realistic curved-tube panel, flagged Limonene + Linalool |
 
 Nothing gets claimed on a judged surface until its row says Wired: yes with a real file reference.

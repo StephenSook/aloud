@@ -42,6 +42,31 @@ describe("allergen matching", () => {
   });
 });
 
+describe("product title dedup", () => {
+  it("does not repeat the brand when the name already starts with it", () => {
+    const read = composeProductRead({
+      status: "found",
+      brand: "Nivea",
+      name: "Nivea creme",
+      ingredients: [{ text: "Aqua" }],
+      ingredientsText: "Aqua",
+    });
+    expect(read.summary).toMatch(/^Nivea creme\./);
+    expect(read.summary).not.toMatch(/Nivea Nivea/i);
+  });
+
+  it("keeps the brand when the name does not include it", () => {
+    const read = composeProductRead({
+      status: "found",
+      brand: "CeraVe",
+      name: "Daily Moisturizing Cream",
+      ingredients: [{ text: "Aqua" }],
+      ingredientsText: "Aqua",
+    });
+    expect(read.summary).toMatch(/^CeraVe Daily Moisturizing Cream\./);
+  });
+});
+
 describe("composeProductRead (live-captured OBF fixtures)", () => {
   it("misses speak the designed fallback, not an error", () => {
     const read = composeProductRead(obfFixture("3600523971282"));

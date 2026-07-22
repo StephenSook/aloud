@@ -1,9 +1,16 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import { LiveRegion } from "@/components/LiveRegion";
 import { speakCue } from "@/lib/audio-cues";
+import {
+  addToHistory,
+  getServerSnapshot,
+  getSnapshot,
+  parseHistory,
+  subscribe,
+} from "@/lib/history";
 
 const BarcodeScanner = dynamic(
   () => import("@/components/BarcodeScanner").then((m) => m.BarcodeScanner),
@@ -22,16 +29,6 @@ type ProductReadResponse = {
  * read -> drill-in (full list, follow-up questions through the agent).
  * Manual barcode entry is a first-class path, not a hidden fallback.
  */
-type HistoryEntry = { barcode: string; title: string; at: number };
-
-function readHistory(): HistoryEntry[] {
-  try {
-    return JSON.parse(localStorage.getItem("aloud:history") ?? "[]") as HistoryEntry[];
-  } catch {
-    return [];
-  }
-}
-
 export default function ScanPage() {
   const [phase, setPhase] = useState<Phase>("intro");
   const [announcement, setAnnouncement] = useState("");
@@ -43,9 +40,8 @@ export default function ScanPage() {
   const [answer, setAnswer] = useState("");
   const [lastBarcode, setLastBarcode] = useState("");
   const [compareWith, setCompareWith] = useState("");
-  const [history, setHistory] = useState<HistoryEntry[]>(() =>
-    typeof window === "undefined" ? [] : readHistory(),
-  );
+  const historySnapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const history = useMemo(() => parseHistory(historySnapshot), [historySnapshot]);
 
   const say = useCallback((text: string, force = false) => {
     setAnnouncement(text);
@@ -105,12 +101,7 @@ export default function ScanPage() {
             }),
           );
           if (body.status === "found") {
-            const next = [
-              { barcode, title, at: Date.now() },
-              ...readHistory().filter((h) => h.barcode !== barcode),
-            ].slice(0, 20);
-            localStorage.setItem("aloud:history", JSON.stringify(next));
-            setHistory(next);
+            addToHistory({ barcode, title, at: Date.now() });
           }
         } catch {
           // storage unavailable is fine; voice just starts without context

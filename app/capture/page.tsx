@@ -22,6 +22,16 @@ type Phase = "consent" | "capturing" | "analyzing" | "done";
 type SkinOutput = {
   type: string;
   ui_score?: number;
+  mask_urls?: string[];
+};
+
+type Mask = { type: string; url: string; score?: number };
+
+const CONCERN_LABEL: Record<string, string> = {
+  redness: "Redness",
+  oiliness: "Oiliness",
+  moisture: "Moisture",
+  texture: "Texture",
 };
 
 /**
@@ -36,6 +46,7 @@ export default function CapturePage() {
   const [announcement, setAnnouncement] = useState("");
   const [attempts, setAttempts] = useState<Attempt[]>([]);
   const [verdict, setVerdict] = useState("");
+  const [masks, setMasks] = useState<Mask[]>([]);
   const [engine, setEngine] = useState<"rest" | "mcp">("rest");
   const attemptStart = useRef(0);
   const attemptCount = useRef(0);
@@ -51,11 +62,19 @@ export default function CapturePage() {
   const finish = useCallback(
     (result: SkinResult, captureSeconds: number, via: "rest" | "mcp") => {
       if (result.status === "success") {
+        const scores: Record<string, number> = {};
+        for (const o of result.outputs ?? []) {
+          if (typeof o.ui_score === "number") scores[o.type] = o.ui_score;
+        }
+        // Heatmap overlays the API returns per concern: a "what the analysis
+        // measured" view for a sighted companion. Presigned URLs are shown
+        // in-session only; nothing is stored.
+        setMasks(
+          (result.outputs ?? [])
+            .filter((o) => o.mask_urls?.[0])
+            .map((o) => ({ type: o.type, url: o.mask_urls![0], score: scores[o.type] })),
+        );
         try {
-          const scores: Record<string, number> = {};
-          for (const o of result.outputs ?? []) {
-            if (typeof o.ui_score === "number") scores[o.type] = o.ui_score;
-          }
           sessionStorage.setItem(
             "aloud:skinBaseline",
             JSON.stringify({ capturedAt: Date.now(), scores }),
@@ -82,6 +101,7 @@ export default function CapturePage() {
   const analyze = useCallback(
     async (blob: Blob, metrics: CaptureMetrics) => {
       setPhase("analyzing");
+      setMasks([]);
       const captureSeconds = Math.round(metrics.elapsedMs / 100) / 10;
       try {
         const form = new FormData();
@@ -212,6 +232,37 @@ export default function CapturePage() {
       {phase === "done" && (
         <section className="flex flex-col items-center gap-5 text-center">
           <p className="text-lg leading-8">{verdict}</p>
+
+          {masks.length > 0 && (
+            <figure className="w-full">
+              <figcaption className="text-sm text-[var(--paper-dim)]">
+                What the analysis measured. These are the heatmaps the YouCam API
+                returns, one per concern, shown for a sighted companion. Brighter
+                zones are where the concern reads strongest.
+              </figcaption>
+              <ul className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                {masks.map((m) => (
+                  <li
+                    key={m.type}
+                    className="flex flex-col items-center gap-1 rounded-xl bg-[var(--paper)] p-2"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={m.url}
+                      alt={`Heatmap of measured ${CONCERN_LABEL[m.type] ?? m.type} zones on the face`}
+                      className="h-24 w-auto rounded"
+                      loading="lazy"
+                    />
+                    <span className="text-xs font-medium text-[var(--ink)]">
+                      {CONCERN_LABEL[m.type] ?? m.type}
+                      {typeof m.score === "number" ? ` · ${m.score}` : ""}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </figure>
+          )}
+
           <button
             type="button"
             className="btn-primary"

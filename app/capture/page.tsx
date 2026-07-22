@@ -157,8 +157,8 @@ export default function CapturePage() {
       <LiveRegion message={announcement} assertive />
 
       {phase === "consent" && (
-        <section className="flex flex-col items-center gap-5 text-center">
-          <p className="text-lg leading-8 text-[var(--paper)]">
+        <section className="flex flex-col items-center gap-5">
+          <p className="max-w-md text-lg leading-8 text-[var(--paper-dim)]">
             Aloud will open the front camera and guide you by sound to frame
             your face, then send one photo to a skin analysis service. The
             photo is processed for this session only. Nothing is saved, and
@@ -234,8 +234,8 @@ export default function CapturePage() {
       )}
 
       {phase === "done" && (
-        <section className="flex flex-col items-center gap-5 text-center">
-          <p className="text-lg leading-8">{verdict}</p>
+        <section className="flex w-full flex-col items-center gap-5">
+          <p className="w-full text-left text-lg leading-8 text-[var(--paper)]">{verdict}</p>
 
           {masks.length > 0 && (
             <figure className="w-full">

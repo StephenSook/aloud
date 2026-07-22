@@ -314,8 +314,34 @@ export default function ScanPage() {
       )}
 
       {phase === "result" && read && (
-        <section className="flex w-full flex-col items-center gap-5 text-center">
-          <p className="text-lg leading-8">{read.summary}</p>
+        <section className="flex w-full flex-col items-center gap-5">
+          {productStatus === "found" ? (
+            (() => {
+              const firstBreak = read.summary.indexOf(". ");
+              const title = firstBreak > 0 ? read.summary.slice(0, firstBreak) : "This product";
+              const body = firstBreak > 0 ? read.summary.slice(firstBreak + 2) : read.summary;
+              const hasAllergen = /flags? (it |them )?as (a )?fragrance allergen/i.test(read.summary);
+              return (
+                <div className="flex w-full flex-col gap-4 text-left">
+                  <h2 className="display text-3xl">{title}</h2>
+                  <div
+                    className={`rounded-2xl border px-4 py-3 text-base leading-7 ${
+                      hasAllergen
+                        ? "border-[var(--gold)] bg-[color-mix(in_srgb,var(--gold)_12%,transparent)] text-[var(--paper)]"
+                        : "hairline text-[var(--paper-dim)]"
+                    }`}
+                  >
+                    {hasAllergen
+                      ? "Heads up: this label lists an EU-flagged fragrance allergen."
+                      : "No EU-flagged fragrance allergen listed on this label."}
+                  </div>
+                  <p className="text-lg leading-8 text-[var(--paper)]">{body}</p>
+                </div>
+              );
+            })()
+          ) : (
+            <p className="text-lg leading-8 text-center text-[var(--paper)]">{read.summary}</p>
+          )}
 
           {(productStatus === "not_found" || productStatus === "no_ingredients") && (
             <div className="flex w-full max-w-sm flex-col items-center gap-2">

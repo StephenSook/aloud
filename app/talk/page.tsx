@@ -31,7 +31,7 @@ export default function TalkPage() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-xl flex-col items-center gap-6 px-6 py-12">
       <h1 className="display text-4xl">Talk with Aloud</h1>
-      <p className="text-lg leading-8 text-[var(--paper)] text-center">
+      <p className="max-w-md text-lg leading-8 text-[var(--paper-dim)]">
         A live voice conversation. Ask about ingredients, allergens, or a
         barcode number. If you scanned a product this session, Aloud already
         knows its label.

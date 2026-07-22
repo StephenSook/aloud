@@ -3,6 +3,7 @@
  * scores, spoken in bands with the numbers, honest uncertainty in plain
  * words, never blame, always a human-assist reminder.
  */
+import { toneCaveat, type ToneContext } from "@/lib/skin-tone";
 
 export type ScoredOutput = { type: string; ui_score?: number };
 
@@ -19,7 +20,7 @@ function band(score: number): string {
   return "on the lower side";
 }
 
-export function composeSkinRead(outputs: ScoredOutput[]): string {
+export function composeSkinRead(outputs: ScoredOutput[], tone?: ToneContext): string {
   const scored = outputs.filter(
     (o): o is Required<ScoredOutput> => typeof o.ui_score === "number",
   );
@@ -30,9 +31,11 @@ export function composeSkinRead(outputs: ScoredOutput[]): string {
     const label = CONCERN_SPOKEN[o.type] ?? o.type.replace(/_/g, " ");
     return `${label} scored ${o.ui_score} out of 100, ${band(o.ui_score)}`;
   });
+  const caveat = tone ? toneCaveat(tone) : null;
   return (
     `Here is what the analysis found. ${parts.join(". ")}. ` +
     "Higher numbers mean healthier looking. These scores describe how your skin looks in this one photo, not a medical assessment, and lighting can shift them. " +
+    (caveat ? `${caveat} ` : "") +
     "If anything sounds off, a second opinion from someone you trust is always a good check."
   );
 }

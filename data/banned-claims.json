@@ -28,7 +28,10 @@
     "\\b\\d+(?:\\.\\d+)?% accurate\\b",
     "\\bprescri\\w*",
     "\\bdisease\\b",
-    "\\bsymptom\\w*"
+    "\\bsymptom\\w*",
+    "\\byour (race|ethnicity)\\b",
+    "\\byou (are|look|appear) (black|white|asian|hispanic|latino|latina|caucasian)\\b",
+    "\\byour fitzpatrick\\b"
   ],
   "tone": [
     "—",

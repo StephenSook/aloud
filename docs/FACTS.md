@@ -80,5 +80,6 @@ Any product not in Open Beauty Facts speaks the designed camera-and-manual fallb
 | Agent tool loop (AI SDK) | **YES** | `app/api/agent/route.ts` (gpt-5-mini, tools: ingredientInfo / allergenCheck / productLookup); grounded claim-clean answer verified live on production 2026-07-19 |
 | OpenAI Realtime voice (full session) | **YES** | `components/VoiceSession.tsx` + `/talk` + `app/api/voice/token/route.ts`; live WebRTC session (tool calling + text mirroring) verified against PRODUCTION 2026-07-19, connected in 2.9s |
 | html5-qrcode | **YES** | `components/BarcodeScanner.tsx` via `/scan` (on-device decode pass pending Stephen's iPhone run) |
+| Perfect Corp native MCP server | **YES** | `lib/youcam-mcp.ts` via `/api/skin?engine=mcp` + capture-page toggle; a live `tools/call` to `mcp-api-01.makeupar.com/mcp` ran a real AI-Skin-Analysis and returned real ui_scores. Verified on PRODUCTION 2026-07-22 (redness 75 / oiliness 70 / texture 77 / moisture 69 via MCP) |
 
 Nothing gets claimed on a judged surface until its row says Wired: yes with a real file reference.

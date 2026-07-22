@@ -69,9 +69,11 @@ export default function CapturePage() {
         // Heatmap overlays the API returns per concern: a "what the analysis
         // measured" view for a sighted companion. Presigned URLs are shown
         // in-session only; nothing is stored.
+        // Concern heatmaps only; the API also returns a resize_image (the raw
+        // face) which we never display, on privacy grounds.
         setMasks(
           (result.outputs ?? [])
-            .filter((o) => o.mask_urls?.[0])
+            .filter((o) => o.mask_urls?.[0] && CONCERN_LABEL[o.type])
             .map((o) => ({ type: o.type, url: o.mask_urls![0], score: scores[o.type] })),
         );
         try {

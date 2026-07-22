@@ -110,21 +110,35 @@ export async function runSkinTone(
       method: "POST",
       body: JSON.stringify({ src_file_id: fileId, format: "json" }),
     });
-    if (!created.ok) return null;
+    if (!created.ok) {
+      console.error("skin-tone analysis: task creation failed", created.status);
+      return null;
+    }
     const taskId = (await created.json())?.data?.task_id;
-    if (!taskId) return null;
+    if (!taskId) {
+      console.error("skin-tone analysis: no task_id returned");
+      return null;
+    }
 
     const deadline = Date.now() + 20_000;
     while (Date.now() < deadline) {
       await new Promise((r) => setTimeout(r, 1200));
       const res = await api(`/s2s/v2.0/task/skin-tone-analysis/${encodeURIComponent(taskId)}`);
-      if (!res.ok) return null;
+      if (!res.ok) {
+        console.error("skin-tone analysis: poll failed", res.status);
+        return null;
+      }
       const data = (await res.json())?.data;
       if (data?.task_status === "success") return data.results ?? null;
-      if (data?.task_status === "error") return null;
+      if (data?.task_status === "error") {
+        console.error("skin-tone analysis: task errored", data.error);
+        return null;
+      }
     }
+    console.error("skin-tone analysis: timed out");
     return null;
-  } catch {
+  } catch (err) {
+    console.error("skin-tone analysis threw", err);
     return null;
   }
 }

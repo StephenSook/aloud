@@ -41,6 +41,12 @@ export function PushToTalk({
           headers: { "Content-Type": audio.type || "audio/webm" },
           body: audio,
         });
+        if (!heard.ok) {
+          // A backend outage must never be blamed on the user (hard rule 3).
+          onStatus("The voice service could not be reached right now, not you. Please try again in a moment.");
+          setStatus("idle");
+          return;
+        }
         const { text: question } = (await heard.json()) as { text?: string };
         if (!question?.trim()) {
           onStatus("I did not catch that. Press and hold, then speak.");
@@ -68,11 +74,13 @@ export function PushToTalk({
             },
           }),
         });
-        const { answer, error } = (await answered.json()) as {
-          answer?: string;
-          error?: string;
-        };
-        const reply = answer ?? error ?? "I could not answer that.";
+        const parsed = answered.ok
+          ? ((await answered.json()) as { answer?: string; error?: string })
+          : { error: undefined };
+        const reply =
+          parsed.answer ??
+          parsed.error ??
+          "I could not answer that just now. That is on my end, not you. Please try again.";
         onTranscript(`Aloud: ${reply}`);
 
         setStatus("speaking");

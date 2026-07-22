@@ -3,7 +3,7 @@ import { lookupBarcode } from "@/lib/openbeautyfacts";
 import { composeProductRead } from "@/lib/spoken-read";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   ctx: { params: Promise<{ barcode: string }> },
 ) {
   const { barcode } = await ctx.params;
@@ -11,8 +11,9 @@ export async function GET(
     return NextResponse.json({ error: "invalid barcode" }, { status: 400 });
   }
   try {
+    const needs = request.nextUrl.searchParams.get("needs")?.slice(0, 300) ?? undefined;
     const lookup = await lookupBarcode(barcode);
-    const read = composeProductRead(lookup);
+    const read = composeProductRead(lookup, needs);
     return NextResponse.json({ status: lookup.status, read });
   } catch (err) {
     console.error("product lookup failed", err);

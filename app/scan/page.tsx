@@ -42,6 +42,7 @@ export default function ScanPage() {
   const [compareWith, setCompareWith] = useState("");
   const [productStatus, setProductStatus] = useState("");
   const [readingLabel, setReadingLabel] = useState(false);
+  const [needs, setNeeds] = useState("");
   const historySnapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const history = useMemo(() => parseHistory(historySnapshot), [historySnapshot]);
 
@@ -87,7 +88,10 @@ export default function ScanPage() {
       setPhase("looking_up");
       say("Looking that up.", true);
       try {
-        const res = await fetch(`/api/product/${encodeURIComponent(barcode)}`);
+        const url = needs.trim()
+          ? `/api/product/${encodeURIComponent(barcode)}?needs=${encodeURIComponent(needs.trim())}`
+          : `/api/product/${encodeURIComponent(barcode)}`;
+        const res = await fetch(url);
         if (!res.ok) throw new Error(`lookup ${res.status}`);
         const body = (await res.json()) as ProductReadResponse;
         setRead(body.read);
@@ -122,7 +126,7 @@ export default function ScanPage() {
         say("The product database did not respond. Check the connection and try again.", true);
       }
     },
-    [say, compareWith, compare],
+    [say, compareWith, compare, needs],
   );
 
   const readLabel = useCallback(
@@ -205,6 +209,19 @@ export default function ScanPage() {
             barcode, then read the product and its ingredients out loud. You
             can also type the barcode number instead.
           </p>
+          <div className="flex w-full max-w-sm flex-col gap-1 text-left">
+            <label htmlFor="needs" className="text-sm text-[var(--paper-dim)]">
+              Your skin needs (optional). Aloud will relate each product to
+              what you say.
+            </label>
+            <input
+              id="needs"
+              placeholder="e.g. oily T-zone, fragrance makes me itch"
+              value={needs}
+              onChange={(e) => setNeeds(e.target.value)}
+              className="w-full rounded-full border hairline bg-[var(--ink-soft)] px-5 py-3 text-base"
+            />
+          </div>
           <button
             type="button"
             className="btn-primary"

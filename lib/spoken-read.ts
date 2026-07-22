@@ -8,6 +8,7 @@ import { describeIngredient } from "@/lib/cosing";
 import { findListedAllergens, listsFragrance } from "@/lib/allergens";
 import { splitIngredientsText, type ProductLookup } from "@/lib/openbeautyfacts";
 import { titleCase } from "@/lib/cosing";
+import { hasNeed, matchNotes, parseNeeds } from "@/lib/needs";
 
 /**
  * Build a clean spoken title. Open Beauty Facts often repeats the brand inside
@@ -49,7 +50,7 @@ export type ProductRead = {
   fullList: string | null;
 };
 
-export function composeProductRead(lookup: ProductLookup): ProductRead {
+export function composeProductRead(lookup: ProductLookup, needsText?: string): ProductRead {
   if (lookup.status === "not_found") {
     return {
       summary:
@@ -98,6 +99,13 @@ export function composeProductRead(lookup: ProductLookup): ProductRead {
   for (const hit of marqueeHits) {
     const described = describeIngredient(hit);
     if (described) parts.push(described);
+  }
+
+  if (needsText && needsText.trim().length > 0) {
+    const needs = parseNeeds(needsText);
+    if (hasNeed(needs)) {
+      parts.push(...matchNotes(needs, names));
+    }
   }
 
   parts.push(

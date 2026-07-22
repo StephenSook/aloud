@@ -55,6 +55,8 @@ export function matchNotes(needs: Needs, ingredientNames: string[]): string[] {
     }
   }
 
+  // Hydration and oil-control answer whether the need is met OR not, so silence
+  // is never mistaken for a match by someone who cannot see the screen.
   if (needs.wantHydration) {
     const humectants = ingredientNames.filter((n) =>
       ingredientHasFunction(n, ["HUMECTANT", "SKIN CONDITIONING - HUMECTANT", "MOISTURISING"]),
@@ -65,6 +67,10 @@ export function matchNotes(needs: Needs, ingredientNames: string[]): string[] {
           .slice(0, 2)
           .map((n) => titleCase(n.trim().toUpperCase()))
           .join(" and ")}, described as humectants that help skin hold surface moisture.`,
+      );
+    } else {
+      notes.push(
+        "You mentioned dryness. I did not find an ingredient the label describes as a humectant, though that does not rule out others I could not match.",
       );
     }
   }
@@ -79,6 +85,10 @@ export function matchNotes(needs: Needs, ingredientNames: string[]): string[] {
           .slice(0, 2)
           .map((n) => titleCase(n.trim().toUpperCase()))
           .join(" and ")}, listed as oil-absorbing.`,
+      );
+    } else {
+      notes.push(
+        "You mentioned shine. I did not find an ingredient the label describes as oil-absorbing, though that does not rule out others I could not match.",
       );
     }
   }

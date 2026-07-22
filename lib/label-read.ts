@@ -49,7 +49,12 @@ export function composeLabelRead(names: string[]): LabelRead {
   } else if (fragrance) {
     parts.push("It lists fragrance, and no EU-flagged fragrance allergens are named individually.");
   } else {
-    parts.push("I did not see fragrance or an EU-flagged fragrance allergen in what I read.");
+    // A false negative here is the dangerous direction for someone avoiding an
+    // allergen, and a photo read is the least reliable path, so the caution is
+    // bound to this exact claim, not left to the general trailing note.
+    parts.push(
+      "From this photo I did not read fragrance or an EU-flagged fragrance allergen, but a photo read can miss one. If avoiding an allergen matters to you, please double-check another way.",
+    );
   }
 
   const marqueeHits = cleaned

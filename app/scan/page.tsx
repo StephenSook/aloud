@@ -40,6 +40,8 @@ export default function ScanPage() {
   const [answer, setAnswer] = useState("");
   const [lastBarcode, setLastBarcode] = useState("");
   const [compareWith, setCompareWith] = useState("");
+  const [productStatus, setProductStatus] = useState("");
+  const [readingLabel, setReadingLabel] = useState(false);
   const historySnapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const history = useMemo(() => parseHistory(historySnapshot), [historySnapshot]);
 
@@ -89,6 +91,7 @@ export default function ScanPage() {
         if (!res.ok) throw new Error(`lookup ${res.status}`);
         const body = (await res.json()) as ProductReadResponse;
         setRead(body.read);
+        setProductStatus(body.status);
         const title = body.read.summary.split(".")[0] ?? "";
         setProductTitle(title);
         setLastBarcode(barcode);
@@ -120,6 +123,46 @@ export default function ScanPage() {
       }
     },
     [say, compareWith, compare],
+  );
+
+  const readLabel = useCallback(
+    async (file: File) => {
+      setReadingLabel(true);
+      say("Reading the label. This takes a few seconds.", true);
+      try {
+        const form = new FormData();
+        form.append("image", file);
+        const res = await fetch("/api/label", { method: "POST", body: form });
+        const body = (await res.json()) as {
+          read?: { summary: string; fullList: string | null };
+          error?: string;
+        };
+        if (body.read) {
+          setRead(body.read);
+          setProductStatus("found");
+          try {
+            sessionStorage.setItem(
+              "aloud:lastScan",
+              JSON.stringify({
+                title: "the product you photographed",
+                ingredients: body.read.fullList ? body.read.fullList.split(", ") : [],
+              }),
+            );
+          } catch {
+            // storage unavailable is fine
+          }
+          say(body.read.summary, true);
+        } else {
+          say(body.error ?? "I could not read the label. Try again.", true);
+        }
+      } catch (err) {
+        console.error(err);
+        say("I could not read the label just now. Try again.", true);
+      } finally {
+        setReadingLabel(false);
+      }
+    },
+    [say],
   );
 
   const ask = useCallback(async () => {
@@ -246,6 +289,32 @@ export default function ScanPage() {
       {phase === "result" && read && (
         <section className="flex w-full flex-col items-center gap-5 text-center">
           <p className="text-lg leading-8">{read.summary}</p>
+
+          {(productStatus === "not_found" || productStatus === "no_ingredients") && (
+            <div className="flex w-full max-w-sm flex-col items-center gap-2">
+              <label
+                className={`btn-primary cursor-pointer ${readingLabel ? "opacity-50" : ""}`}
+              >
+                {readingLabel ? "Reading the label" : "Read the label with the camera"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  className="sr-only"
+                  disabled={readingLabel}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) void readLabel(file);
+                  }}
+                />
+              </label>
+              <p className="text-sm text-[var(--paper-dim)]">
+                Point the camera at the ingredients panel, holding it flat and in
+                good light.
+              </p>
+            </div>
+          )}
+
           {read.fullList && (
             <details
               className="w-full text-left"

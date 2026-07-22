@@ -64,9 +64,12 @@ vision model to freely describe it.
 Around that core runs an agentic tool loop (Vercel AI SDK) whose tools reach
 the full EU CosIng inventory of 33,116 active ingredients, the EU
 fragrance-allergen list from Regulation 2023/1545, and Open Beauty Facts, plus
-a WebRTC voice layer over the OpenAI Realtime API. On a real iPhone the
-non-visual capture passed its kill experiment: 10 of 10 attempts accepted by
-the analysis, every one under 30 seconds.
+a WebRTC voice layer over the OpenAI Realtime API. Aloud also speaks Perfect
+Corp's own language: the skin analysis can be routed through Perfect Corp's
+native YouCam MCP server, the sponsor's 2026 agentic surface, and returns the
+same real scores. On a real iPhone the non-visual capture passed its kill
+experiment: 10 of 10 attempts accepted by the analysis, every one under 30
+seconds.
 
 ### Why it is safe (and why that matters for retail)
 
@@ -85,9 +88,10 @@ For the shopper, it is independence: completing the decision alone.
 
 ## Built with
 
-Next.js, TypeScript, Vercel, Perfect Corp YouCam AI Skin Analysis API, OpenAI
-Realtime API, Vercel AI SDK, MediaPipe Tasks Vision, html5-qrcode, EU CosIng,
-EU fragrance-allergen list (Reg 2023/1545), Open Beauty Facts.
+Next.js, TypeScript, Vercel, Perfect Corp YouCam AI Skin Analysis API, Perfect
+Corp native YouCam MCP server, OpenAI Realtime API, Vercel AI SDK, MediaPipe
+Tasks Vision, html5-qrcode, EU CosIng, EU fragrance-allergen list (Reg
+2023/1545), Open Beauty Facts.
 
 ## Try it out
 

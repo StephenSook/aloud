@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
 import { LiveRegion } from "@/components/LiveRegion";
-import { speakCue } from "@/lib/audio-cues";
+import { earcons, speakCue } from "@/lib/audio-cues";
 import {
   addToHistory,
   getServerSnapshot,
@@ -49,6 +49,14 @@ export default function ScanPage() {
   const say = useCallback((text: string, force = false) => {
     setAnnouncement(text);
     speakCue(text, force);
+  }, []);
+
+  // A meaningful earcon before the sentence: caution on a listed allergen,
+  // a bright note on a clean hit, a soft descending pair on a miss.
+  const earconFor = useCallback((status: string, summary: string) => {
+    if (status === "not_found" || status === "no_ingredients") earcons.miss();
+    else if (/flags? (it |them )?as (a )?fragrance allergen/i.test(summary)) earcons.warn();
+    else earcons.found();
   }, []);
 
   const compare = useCallback(
@@ -114,6 +122,7 @@ export default function ScanPage() {
           // storage unavailable is fine; voice just starts without context
         }
         setPhase("result");
+        earconFor(body.status, body.read.summary);
         say(body.read.summary, true);
       } catch (err) {
         console.error(err);
@@ -126,7 +135,7 @@ export default function ScanPage() {
         say("The product database did not respond. Check the connection and try again.", true);
       }
     },
-    [say, compareWith, compare, needs],
+    [say, compareWith, compare, needs, earconFor],
   );
 
   const readLabel = useCallback(
@@ -155,6 +164,7 @@ export default function ScanPage() {
           } catch {
             // storage unavailable is fine
           }
+          earconFor("found", body.read.summary);
           say(body.read.summary, true);
         } else {
           say(body.error ?? "I could not read the label. Try again.", true);
@@ -166,7 +176,7 @@ export default function ScanPage() {
         setReadingLabel(false);
       }
     },
-    [say],
+    [say, earconFor],
   );
 
   const ask = useCallback(async () => {

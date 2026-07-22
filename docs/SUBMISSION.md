@@ -89,9 +89,10 @@ For the shopper, it is independence: completing the decision alone.
 ## Built with
 
 Next.js, TypeScript, Vercel, Perfect Corp YouCam AI Skin Analysis API, Perfect
-Corp native YouCam MCP server, OpenAI Realtime API, Vercel AI SDK, MediaPipe
-Tasks Vision, html5-qrcode, EU CosIng, EU fragrance-allergen list (Reg
-2023/1545), Open Beauty Facts.
+Corp native YouCam MCP server, OpenAI Realtime API, OpenAI vision (label
+reader), Vercel AI SDK, Deepgram (fallback STT), ElevenLabs (fallback TTS),
+MediaPipe Tasks Vision, html5-qrcode, EU CosIng, EU fragrance-allergen list
+(Reg 2023/1545), Open Beauty Facts.
 
 ## Try it out
 

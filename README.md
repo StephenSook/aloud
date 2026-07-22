@@ -32,7 +32,7 @@ Everything is spoken, operable with no screen, and never makes a medical or trea
 - **Next.js App Router + TypeScript on Vercel.** One app, one deploy, HTTPS everywhere (the camera and mic require it).
 - **Server (Route Handlers):** proxy for the Perfect Corp **YouCam AI Skin Analysis API** (file register, presigned PUT, task create, poll) and Open Beauty Facts; agent tool loop (Vercel AI SDK); ephemeral token mint for realtime voice. The skin analysis can also be routed through Perfect Corp's **native YouCam MCP server** (`lib/youcam-mcp.ts`, the `Perfect Corp MCP` toggle on the capture screen), returning the same real scores. All secrets stay server-side.
 - **Browser:** MediaPipe face detection for audio-guided non-visual capture, html5-qrcode for barcode scanning, ARIA live regions and managed focus for screen-reader-native flows.
-- **Voice:** OpenAI Realtime over WebRTC (works on iOS Safari), with a spoken text mirror as a fallback.
+- **Voice:** OpenAI Realtime over WebRTC (works on iOS Safari), with a push-to-talk fallback (Deepgram STT + ElevenLabs TTS) for networks that block WebRTC, and a text mirror throughout.
 - **Data:** bundled EU CosIng ingredient-function table and EU fragrance-allergen list. No database, no auth, nothing persisted server-side.
 
 ## Quickstart

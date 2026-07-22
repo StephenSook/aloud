@@ -173,22 +173,17 @@ export function VoiceSession({
         <button
           type="button"
           data-testid="voice-start"
-          className="rounded-full bg-black px-8 py-4 text-lg font-medium text-white dark:bg-white dark:text-black"
+          className="btn-primary"
           onClick={() => void start()}
         >
           Start talking with Aloud
         </button>
       ) : (
-        <button
-          type="button"
-          data-testid="voice-stop"
-          className="rounded-full border border-zinc-400 px-8 py-4 text-lg font-medium"
-          onClick={stop}
-        >
+        <button type="button" data-testid="voice-stop" className="btn-ghost" onClick={stop}>
           End the conversation
         </button>
       )}
-      <p className="text-base text-zinc-500 dark:text-zinc-400" aria-hidden="true">
+      <p className="text-base text-[var(--paper-dim)]" aria-hidden="true">
         {state === "live"
           ? "Live. Speak naturally, interrupt any time."
           : state === "connecting"

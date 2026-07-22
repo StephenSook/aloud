@@ -89,8 +89,8 @@ export default function VerifyPage() {
       <LiveRegion message={announcement} assertive />
 
       {phase === "intro" && (
-        <section className="flex flex-col items-center gap-5 text-center">
-          <p className="text-lg leading-8 text-[var(--paper)]">
+        <section className="flex flex-col items-center gap-5">
+          <p className="max-w-md text-lg leading-8 text-[var(--paper-dim)]">
             After you apply makeup, Aloud photographs your face the same guided
             way and compares the analysis against your bare-skin capture from
             this session. You hear what changed, in plain numbers, with honest
@@ -140,8 +140,8 @@ export default function VerifyPage() {
       )}
 
       {phase === "done" && (
-        <section className="flex flex-col items-center gap-5 text-center">
-          <p className="text-lg leading-8">{verdict}</p>
+        <section className="flex w-full flex-col items-center gap-5">
+          <p className="w-full text-left text-lg leading-8 text-[var(--paper)]">{verdict}</p>
           <button
             type="button"
             className="btn-primary"

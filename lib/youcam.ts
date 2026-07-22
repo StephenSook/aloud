@@ -47,8 +47,9 @@ export async function registerFile(
   fileName: string,
   fileSize: number,
   contentType: string,
+  feature: "skin-analysis" | "skin-tone-analysis" = "skin-analysis",
 ): Promise<{ fileId: string; putUrl: string; putHeaders: Record<string, string> }> {
-  const res = await api("/s2s/v2.0/file/skin-analysis", {
+  const res = await api(`/s2s/v2.0/file/${feature}`, {
     method: "POST",
     body: JSON.stringify({
       files: [{ content_type: contentType, file_name: fileName, file_size: fileSize }],
@@ -86,6 +87,46 @@ export async function createSkinTask(
   const taskId = body?.data?.task_id;
   if (!taskId) throw new Error("task creation returned no task_id");
   return taskId;
+}
+
+/**
+ * Run Skin Tone Analysis end to end (register, upload, task, poll) and return
+ * the raw results, used only to calibrate the honesty of the skin read.
+ * Best-effort: returns null on any failure so the main read never breaks.
+ */
+export async function runSkinTone(
+  bytes: ArrayBuffer,
+  contentType: string,
+): Promise<{ color?: { skin_color?: string }; face_quality?: { lighting?: string } } | null> {
+  try {
+    const { fileId, putUrl, putHeaders } = await registerFile(
+      "tone.jpg",
+      bytes.byteLength,
+      contentType,
+      "skin-tone-analysis",
+    );
+    await uploadBytes(putUrl, putHeaders, bytes);
+    const created = await api("/s2s/v2.0/task/skin-tone-analysis", {
+      method: "POST",
+      body: JSON.stringify({ src_file_id: fileId, format: "json" }),
+    });
+    if (!created.ok) return null;
+    const taskId = (await created.json())?.data?.task_id;
+    if (!taskId) return null;
+
+    const deadline = Date.now() + 20_000;
+    while (Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, 1200));
+      const res = await api(`/s2s/v2.0/task/skin-tone-analysis/${encodeURIComponent(taskId)}`);
+      if (!res.ok) return null;
+      const data = (await res.json())?.data;
+      if (data?.task_status === "success") return data.results ?? null;
+      if (data?.task_status === "error") return null;
+    }
+    return null;
+  } catch {
+    return null;
+  }
 }
 
 /** Error field arrives as a stringified tuple: "('message', 'error_code')". */

@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { LiveRegion } from "@/components/LiveRegion";
 import type { CaptureMetrics } from "@/components/CameraCapture";
 import { composeSkinRead } from "@/lib/skin-read";
+import type { ToneContext } from "@/lib/skin-tone";
 
 const CameraCapture = dynamic(
   () => import("@/components/CameraCapture").then((m) => m.CameraCapture),
@@ -60,7 +61,7 @@ export default function CapturePage() {
   }, []);
 
   const finish = useCallback(
-    (result: SkinResult, captureSeconds: number, via: "rest" | "mcp") => {
+    (result: SkinResult, captureSeconds: number, via: "rest" | "mcp", tone?: ToneContext) => {
       if (result.status === "success") {
         const scores: Record<string, number> = {};
         for (const o of result.outputs ?? []) {
@@ -85,7 +86,7 @@ export default function CapturePage() {
           // storage unavailable is fine; verify degrades honestly
         }
         const route = via === "mcp" ? " Analyzed through Perfect Corp's MCP server." : "";
-        const text = `${composeSkinRead(result.outputs ?? [])} Capture took ${captureSeconds} seconds.${route}`;
+        const text = `${composeSkinRead(result.outputs ?? [], tone)} Capture took ${captureSeconds} seconds.${route}`;
         setVerdict(text);
         setAnnouncement(text);
         logAttempt(captureSeconds, via === "mcp" ? "accepted (via MCP)" : "accepted");
@@ -115,11 +116,12 @@ export default function CapturePage() {
           engine?: string;
           taskId?: string;
           result?: SkinResult;
+          tone?: ToneContext;
         };
 
         // MCP path returns the full result synchronously.
         if (body.result) {
-          finish(body.result, captureSeconds, "mcp");
+          finish(body.result, captureSeconds, "mcp", body.tone);
           return;
         }
 
@@ -131,7 +133,7 @@ export default function CapturePage() {
           if (!res.ok) throw new Error(`poll failed ${res.status}`);
           const result = (await res.json()) as SkinResult;
           if (result.status === "success" || result.status === "error") {
-            finish(result, captureSeconds, "rest");
+            finish(result, captureSeconds, "rest", body.tone);
             return;
           }
         }

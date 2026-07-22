@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSkinTask, registerFile, uploadBytes } from "@/lib/youcam";
+import { createSkinTask, registerFile, runSkinTone, uploadBytes } from "@/lib/youcam";
 import { analyzeSkinViaMcp } from "@/lib/youcam-mcp";
+import { parseToneContext } from "@/lib/skin-tone";
 
 const MAX_BYTES = 10 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png"]);
@@ -23,21 +24,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "image exceeds 10MB" }, { status: 400 });
     }
 
+    const bytes = await image.arrayBuffer();
     const { fileId, putUrl, putHeaders } = await registerFile(
       image.name || "capture.jpg",
       image.size,
       image.type,
     );
-    await uploadBytes(putUrl, putHeaders, await image.arrayBuffer());
+    await uploadBytes(putUrl, putHeaders, bytes);
+
+    // Skin Tone Analysis runs in parallel, used only to calibrate the honesty
+    // of the read (bias-aware confidence). Best-effort: never blocks the read.
+    const tonePromise = runSkinTone(bytes, image.type);
 
     if (engine === "mcp") {
       // The MCP tool returns the full result synchronously.
-      const result = await analyzeSkinViaMcp(fileId, ["redness", "oiliness", "moisture", "texture"]);
-      return NextResponse.json({ engine: "mcp", result });
+      const [result, toneResults] = await Promise.all([
+        analyzeSkinViaMcp(fileId, ["redness", "oiliness", "moisture", "texture"]),
+        tonePromise,
+      ]);
+      return NextResponse.json({ engine: "mcp", result, tone: parseToneContext(toneResults) });
     }
 
-    const taskId = await createSkinTask(fileId);
-    return NextResponse.json({ engine: "rest", taskId });
+    const [taskId, toneResults] = await Promise.all([createSkinTask(fileId), tonePromise]);
+    return NextResponse.json({ engine: "rest", taskId, tone: parseToneContext(toneResults) });
   } catch (err) {
     console.error("skin task creation failed", err);
     return NextResponse.json(

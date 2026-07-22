@@ -19,14 +19,30 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Aloud",
+  metadataBase: new URL("https://aloudbeauty.vercel.app"),
+  title: "Aloud, Beauty aloud",
   description:
     "A voice-first skincare assistant for blind and low-vision shoppers. Scan products, hear ingredients, and hear an honest read of your skin, with the screen off.",
+  openGraph: {
+    title: "Aloud, Beauty aloud",
+    description:
+      "The first beauty AI a blind shopper can use alone, with the screen off. Scan a product and hear what is in it, and hear an honest read of your skin.",
+    url: "https://aloudbeauty.vercel.app",
+    siteName: "Aloud",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Aloud, Beauty aloud",
+    description:
+      "The first beauty AI a blind shopper can use alone, with the screen off.",
+  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  themeColor: "#0d0a08",
 };
 
 export default function RootLayout({

@@ -80,6 +80,15 @@ only, states uncertainty in plain words, communicates input quality without
 blaming the user, and stores nothing. That discipline is exactly what a beauty
 retailer needs to deploy skin AI without regulatory exposure.
 
+It goes one step further, and this is the part we are proudest of. Published
+dermatology documents that readings like redness are measured less reliably on
+deeper skin tones and in low light. So Aloud runs Perfect Corp's Skin Tone
+Analysis, converts the returned skin color to a neutral color metric (ITA, not
+identity, never race), reads the API's own lighting quality, and on exactly
+those inputs it lowers its confidence and says so, out loud. It is, as far as
+we can find, the first consumer skin tool that discloses its own accuracy bias
+to the person it affects most, at the moment it affects them.
+
 ### Impact
 
 A documented, underserved population; a documented, litigated retail barrier;
@@ -89,10 +98,10 @@ For the shopper, it is independence: completing the decision alone.
 ## Built with
 
 Next.js, TypeScript, Vercel, Perfect Corp YouCam AI Skin Analysis API, Perfect
-Corp native YouCam MCP server, OpenAI Realtime API, OpenAI vision (label
-reader), Vercel AI SDK, Deepgram (fallback STT), ElevenLabs (fallback TTS),
-MediaPipe Tasks Vision, html5-qrcode, EU CosIng, EU fragrance-allergen list
-(Reg 2023/1545), Open Beauty Facts.
+Corp YouCam Skin Tone Analysis API, Perfect Corp native YouCam MCP server,
+OpenAI Realtime API, OpenAI vision (label reader), Vercel AI SDK, Deepgram
+(fallback STT), ElevenLabs (fallback TTS), MediaPipe Tasks Vision, html5-qrcode,
+EU CosIng, EU fragrance-allergen list (Reg 2023/1545), Open Beauty Facts.
 
 ## Try it out
 

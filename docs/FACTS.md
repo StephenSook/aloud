@@ -84,5 +84,6 @@ Any product not in Open Beauty Facts speaks the designed camera-and-manual fallb
 | Skin-analysis heatmap masks | **YES** | capture page renders the API's per-concern `mask_urls` (redness/oiliness/moisture/texture) as a sighted-companion gallery; mask fetch + render verified 2026-07-22 |
 | Vision label reader (OBF-miss fallback) | **YES** | `app/api/label/route.ts` + `lib/label-read.ts` (gpt-5-mini vision -> INCI list -> same allergen/CosIng read). Verified on PRODUCTION 2026-07-22: read 13 ingredients off a realistic curved-tube panel, flagged Limonene + Linalool |
 | Deepgram STT + ElevenLabs TTS (fallback voice) | **YES** | `app/api/voice/transcribe` (Deepgram nova-3) + `app/api/voice/speak` (ElevenLabs flash v2.5) + `components/PushToTalk.tsx` on `/talk`. Round-trip verified on PRODUCTION 2026-07-22 (speak -> transcribe returned the exact sentence) |
+| YouCam Skin Tone Analysis (2nd Skin API) | **YES** | `lib/youcam.ts runSkinTone` + `lib/skin-tone.ts` (hex -> ITA color metric) via `/api/skin`; calibrates the read's confidence on deeper tones / low light. Verified live on PRODUCTION 2026-07-22: deep-tone face returned band=deep ITA -34.6 (caveat triggers), lighter face band=intermediate (no caveat) |
 
 Nothing gets claimed on a judged surface until its row says Wired: yes with a real file reference.

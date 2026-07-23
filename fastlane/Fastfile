@@ -1,7 +1,7 @@
 default_platform(:ios)
 
 APP_ID = "com.aloudbeauty.app"
-APP_NAME = "Aloud"
+APP_NAME = "Aloud Beauty"  # App Store listing name ("Aloud" was globally taken); home-screen name stays "Aloud" via CFBundleDisplayName
 PROJECT = "ios/App/App.xcodeproj"
 
 # Build the iOS shell and upload it to TestFlight with zero interactive prompts,
@@ -9,29 +9,59 @@ PROJECT = "ios/App/App.xcodeproj"
 # App Review, so the build is installable on the account holder's iPhone as soon
 # as it finishes processing. See docs/IOS_TESTFLIGHT.md for the four env vars.
 platform :ios do
-  desc "Build the iOS shell and upload to TestFlight (internal testing, no review)"
-  lane :beta do
-    key = app_store_connect_api_key(
+  # Authenticate with the API key AND set the global Spaceship token so the
+  # Connect API calls below (bundle id + app record) are authenticated too.
+  private_lane :api_key do
+    app_store_connect_api_key(
       key_id: ENV.fetch("ASC_KEY_ID"),
       issuer_id: ENV.fetch("ASC_ISSUER_ID"),
       key_filepath: ENV.fetch("ASC_KEY_PATH"),
+      set_spaceship_token: true,
     )
-    team_id = ENV.fetch("APPLE_TEAM_ID")
+  end
 
-    # 1. Create the App Store Connect app record if it does not exist yet.
-    begin
-      produce(
-        app_identifier: APP_ID,
-        app_name: APP_NAME,
-        api_key: key,
-        skip_devices: true,
-      )
-    rescue => e
-      UI.important("produce skipped (the app record likely already exists): #{e.message}")
+  # Ensure the bundle id and the app record exist. `produce` is Apple-ID based
+  # and cannot use the API key, so create both directly through the Connect API,
+  # which the key is allowed to do.
+  private_lane :ensure_records do
+    bundle = Spaceship::ConnectAPI::BundleId.all.find { |b| b.identifier == APP_ID }
+    if bundle.nil?
+      bundle = Spaceship::ConnectAPI::BundleId.create(name: "Aloud", identifier: APP_ID, platform: "IOS")
+      UI.success("Registered bundle id #{APP_ID}")
+    else
+      UI.message("Bundle id #{APP_ID} already registered")
     end
 
-    # 2. Distribution certificate + App Store provisioning profile, both created
-    #    on demand through the API key (no manual portal steps).
+    # Apple's App Store Connect API forbids creating app records (POST /apps is
+    # not allowed), so the app record is created once in the web UI. Everything
+    # else here is fully automated.
+    if Spaceship::ConnectAPI::App.find(APP_ID).nil?
+      UI.user_error!(
+        "The app record for #{APP_ID} does not exist yet, and Apple's API cannot " \
+        "create it. Create it once at https://appstoreconnect.apple.com/apps " \
+        "(New App -> iOS, name '#{APP_NAME}', bundle id #{APP_ID}, SKU aloudbeauty-app), " \
+        "then re-run `fastlane ios beta`. The bundle id is already registered.",
+      )
+    else
+      UI.message("App record for #{APP_ID} exists")
+    end
+  end
+
+  desc "Register the bundle id + app record via the API key (fast, no build)"
+  lane :bootstrap do
+    api_key
+    ensure_records
+  end
+
+  desc "Build the iOS shell and upload to TestFlight (internal testing, no review)"
+  lane :beta do
+    key = api_key
+    team_id = ENV.fetch("APPLE_TEAM_ID")
+
+    # 1. Bundle id + app record.
+    ensure_records
+
+    # 2. Distribution certificate + App Store provisioning profile via the key.
     cert(api_key: key, team_id: team_id)
     sigh(app_identifier: APP_ID, api_key: key, team_id: team_id)
 

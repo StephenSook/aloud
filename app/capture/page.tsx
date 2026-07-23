@@ -34,6 +34,9 @@ const CONCERN_LABEL: Record<string, string> = {
   oiliness: "Oiliness",
   moisture: "Moisture",
   texture: "Texture",
+  pore: "Pores",
+  radiance: "Radiance",
+  firmness: "Firmness",
 };
 
 /**

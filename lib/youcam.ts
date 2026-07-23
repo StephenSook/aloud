@@ -8,7 +8,18 @@
 
 const BASE = "https://yce-api-01.makeupar.com";
 
-export const SD_ACTIONS = ["redness", "oiliness", "moisture", "texture"] as const;
+// SD concern set (verbatim-valid dst_actions, live-confirmed accepted). Seven
+// concerns puts the task in the 5-7 tier (12 units) for a richer read: the
+// original four plus pores, radiance, and firmness, all cosmetic-safe.
+export const SD_ACTIONS = [
+  "redness",
+  "oiliness",
+  "moisture",
+  "texture",
+  "pore",
+  "radiance",
+  "firmness",
+] as const;
 
 export type SkinOutput = {
   type: string;

@@ -10,7 +10,7 @@ export function FlowHeader() {
     <Link
       href="/"
       aria-label="Aloud, back to home"
-      className="mb-4 inline-flex items-center gap-3 self-start text-[var(--paper-dim)] transition-colors hover:text-[var(--gold)]"
+      className="reveal reveal-1 mb-4 inline-flex items-center gap-3 self-start text-[var(--paper-dim)] transition-colors hover:text-[var(--gold)]"
     >
       <span aria-hidden="true" className="text-base leading-none">&larr;</span>
       <span className="display text-lg text-[var(--paper)]">Aloud</span>

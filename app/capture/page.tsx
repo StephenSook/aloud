@@ -158,7 +158,7 @@ export default function CapturePage() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-xl flex-col items-center gap-6 px-6 py-12">
       <FlowHeader />
-      <h1 className="display text-4xl">Skin capture</h1>
+      <h1 className="display reveal reveal-2 text-4xl">Skin capture</h1>
       <LiveRegion message={announcement} assertive />
 
       {phase === "consent" && (

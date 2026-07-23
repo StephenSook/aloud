@@ -55,6 +55,14 @@ Make the latest build testable: answer export compliance, create the internal gr
 
 Create an external group with a public TestFlight link and attach the latest build
 
+### ios review
+
+```sh
+[bundle exec] fastlane ios review
+```
+
+Set TestFlight test info + submit the latest build for external beta review
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

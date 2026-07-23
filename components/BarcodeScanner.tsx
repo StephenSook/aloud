@@ -80,7 +80,7 @@ export function BarcodeScanner({
               height: { ideal: 720 },
             },
           },
-          (text) => {
+          async (text) => {
             if (decoded.current) return;
             decoded.current = true;
             beeper.stop();
@@ -92,7 +92,13 @@ export function BarcodeScanner({
             setStatus(found);
             onGuidance(found);
             speakCue(found, true);
-            void instance.stop().catch(() => undefined);
+            // Fully tear down html5-qrcode (removes the injected <video>) BEFORE
+            // handing control back to the parent. onDecoded flips the page phase,
+            // which unmounts this component; if the scanner is still mid-teardown
+            // the two DOM mutations race and iOS Safari throws into the error
+            // boundary. Awaiting stop() serialises them.
+            await instance.stop().catch(() => undefined);
+            if (cancelled) return;
             onDecoded(text);
           },
           () => {

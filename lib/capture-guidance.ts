@@ -171,3 +171,21 @@ export function captureCrop(
   const y = Math.max(0, Math.min(frameHeight - targetHeight, faceCy - targetHeight / 2));
   return { x, y, width: targetWidth, height: targetHeight };
 }
+
+/**
+ * Stereo pan (-1 left .. 1 right) toward the face's horizontal position, so the
+ * guidance beep comes from the side the face sits on. Amplified so a face near
+ * the frame edge pans fully; 0 when there is no face.
+ */
+export function framingPan(box: Box | null, frameWidth: number): number {
+  if (!box || frameWidth <= 0) return 0;
+  const cx = (box.originX + box.width / 2) / frameWidth - 0.5;
+  return Math.max(-1, Math.min(1, cx * 2));
+}
+
+/** Face vertical offset (-0.5 above centre .. 0.5 below), for pitch cueing. */
+export function framingVertical(box: Box | null, frameHeight: number): number {
+  if (!box || frameHeight <= 0) return 0;
+  const cy = (box.originY + box.height / 2) / frameHeight - 0.5;
+  return Math.max(-0.5, Math.min(0.5, cy));
+}

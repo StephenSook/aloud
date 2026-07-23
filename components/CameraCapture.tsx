@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   assess,
   captureCrop,
+  framingPan,
+  framingVertical,
   SteadinessTracker,
   type Box,
   type Guidance,
@@ -142,6 +144,10 @@ export function CameraCapture({
             luma,
           });
           beeper.setProximity(guidance.proximity);
+          // Spatial framing: the beep pans toward the face's side and rises in
+          // pitch when the face is high, so both axes are legible by ear alone.
+          beeper.setPan(framingPan(box, video.videoWidth));
+          beeper.setVertical(framingVertical(box, video.videoHeight));
           announce(guidance);
 
           // Tactile "you are framed, hold still" the moment framing locks in,

@@ -90,12 +90,20 @@ export default function Home() {
             allergen list. Cosmetic language only, honest uncertainty always,
             nothing stored.
           </p>
-          <a
-            href="/accessibility"
-            className="mt-4 inline-block underline decoration-[var(--gold)] underline-offset-4"
-          >
-            Accessibility statement
-          </a>
+          <div className="mt-4 flex gap-5">
+            <a
+              href="/accessibility"
+              className="inline-block underline decoration-[var(--gold)] underline-offset-4"
+            >
+              Accessibility statement
+            </a>
+            <a
+              href="/privacy"
+              className="inline-block underline decoration-[var(--gold)] underline-offset-4"
+            >
+              Privacy
+            </a>
+          </div>
         </footer>
 
         <LiveRegion message="Aloud. A voice-first skincare assistant. Four flows: talk, scan a product, know your skin, verify your look." />

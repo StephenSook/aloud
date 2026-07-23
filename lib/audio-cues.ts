@@ -29,6 +29,8 @@ export class Beeper {
   private timer: ReturnType<typeof setTimeout> | null = null;
   private proximity = 0;
   private running = false;
+  private pan = 0;
+  private verticalHz = 0;
 
   /** Call from a tap handler. */
   start() {
@@ -41,33 +43,57 @@ export class Beeper {
     this.proximity = Math.max(0, Math.min(1, p));
   }
 
+  /**
+   * Stereo pan for directional framing: the beep comes from the side the face
+   * sits on (-1 fully left, +1 fully right), so you move the phone toward the
+   * sound to centre it, eyes closed.
+   */
+  setPan(pan: number) {
+    this.pan = Math.max(-1, Math.min(1, pan));
+  }
+
+  /**
+   * Vertical framing as pitch: a face above centre raises the beep, below
+   * lowers it. `cy` is the face's vertical offset (-0.5..0.5, negative = high).
+   */
+  setVertical(cy: number) {
+    this.verticalHz = Math.max(-0.5, Math.min(0.5, -cy)) * 380;
+  }
+
   private schedule() {
     if (!this.running) return;
     const interval = 800 - this.proximity * 650; // 800ms cold -> 150ms hot
     this.timer = setTimeout(() => {
-      this.beep(330 + this.proximity * 550, 0.06);
+      this.beep(330 + this.proximity * 550 + this.verticalHz, 0.06);
       this.schedule();
     }, interval);
   }
 
-  private beep(freq: number, duration: number) {
+  private beep(freq: number, duration: number, pan = this.pan) {
     const ctx = getCtx();
     if (!ctx) return;
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-    osc.frequency.value = freq;
+    osc.frequency.value = Math.max(120, freq);
     osc.type = "sine";
     gain.gain.setValueAtTime(0.15, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-    osc.connect(gain).connect(ctx.destination);
+    // Pan the beep where supported (iOS Safari 14.5+); mono fallback otherwise.
+    if (pan !== 0 && typeof ctx.createStereoPanner === "function") {
+      const panner = ctx.createStereoPanner();
+      panner.pan.value = pan;
+      osc.connect(gain).connect(panner).connect(ctx.destination);
+    } else {
+      osc.connect(gain).connect(ctx.destination);
+    }
     osc.start();
     osc.stop(ctx.currentTime + duration);
   }
 
-  /** Rising two-tone chime on successful capture. */
+  /** Rising two-tone chime on successful capture, centred. */
   success() {
-    this.beep(660, 0.12);
-    setTimeout(() => this.beep(990, 0.2), 130);
+    this.beep(660, 0.12, 0);
+    setTimeout(() => this.beep(990, 0.2, 0), 130);
   }
 
   stop() {

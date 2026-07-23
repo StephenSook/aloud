@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Aloud</title>
+    <style>
+      :root { color-scheme: dark; }
+      html, body {
+        margin: 0;
+        height: 100%;
+        background:
+          radial-gradient(75% 55% at 50% -5%, #262019 0%, transparent 60%),
+          radial-gradient(120% 90% at 50% 0%, #171310 0%, #0d0a08 55%),
+          #0d0a08;
+        color: #e8e2d9;
+        font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      main {
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 2rem;
+        box-sizing: border-box;
+        gap: 1rem;
+      }
+      .mark { display: inline-flex; align-items: center; gap: 10px; }
+      .word { font-family: Georgia, "Times New Roman", serif; font-size: 2rem; letter-spacing: -0.01em; }
+      .bars { display: inline-flex; align-items: flex-end; gap: 4px; height: 22px; }
+      .bars span { width: 3px; border-radius: 2px; background: #c9a227; height: 55%; }
+      .bars span:nth-child(2) { height: 100%; }
+      .bars span:nth-child(3) { height: 40%; }
+      .bars span:nth-child(4) { height: 80%; }
+      p { max-width: 22rem; line-height: 1.6; color: #b3aca0; font-size: 1.05rem; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <span class="mark">
+        <span class="word">Aloud</span>
+        <span class="bars" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></span>
+      </span>
+      <p>Aloud needs an internet connection to hear your products and your skin. Reconnect, then reopen the app.</p>
+    </main>
+  </body>
+</html>

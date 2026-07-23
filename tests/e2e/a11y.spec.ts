@@ -3,7 +3,7 @@ import AxeBuilder from "@axe-core/playwright";
 
 // Accessibility is the product, so an automated WCAG audit is a CI gate.
 // Every static route must have zero serious or critical violations.
-const ROUTES = ["/", "/scan", "/capture", "/verify", "/talk", "/accessibility"];
+const ROUTES = ["/", "/scan", "/capture", "/verify", "/talk", "/accessibility", "/privacy"];
 
 for (const route of ROUTES) {
   test(`no serious a11y violations on ${route}`, async ({ page }) => {

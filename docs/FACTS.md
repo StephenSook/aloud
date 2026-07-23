@@ -71,7 +71,7 @@ Any product not in Open Beauty Facts speaks the designed camera-and-manual fallb
 
 | Claim | Wired? | Evidence (import/call in shipped code) |
 |---|---|---|
-| YouCam AI Skin Analysis API | **YES** | `lib/youcam.ts` (register/PUT/task/poll) via `app/api/skin`; live production run 2026-07-19: task on aloudbeauty.vercel.app returned redness 75 / oiliness 70 / texture 77 / moisture 69 (synthetic verification face, dev only) |
+| YouCam AI Skin Analysis API | **YES** | `lib/youcam.ts` (register/PUT/task/poll) via `app/api/skin`, requesting **7 concerns** (redness, oiliness, moisture, texture, pore, radiance, firmness) at the 12-unit SD tier; the 7 `dst_actions` keys were live-confirmed accepted by `yce-api-01.makeupar.com` 2026-07-23. Earlier live production run 2026-07-19 (4 concerns): redness 75 / oiliness 70 / texture 77 / moisture 69 (synthetic verification face, dev only) |
 | MediaPipe face detection | **YES** | `components/CameraCapture.tsx` (FaceDetector VIDEO mode, blaze_face_short_range) |
 | Non-visual audio guidance | **YES** | `lib/capture-guidance.ts` + `lib/audio-cues.ts` (tonal hot/cold + spoken cues + steadiness hold + lighting gate) |
 | Open Beauty Facts | **YES** | `lib/openbeautyfacts.ts` via `/api/product/[barcode]`; live production read verified 2026-07-19 (real product, 11 EU allergens flagged; designed miss fallback) |

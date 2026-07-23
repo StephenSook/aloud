@@ -12,6 +12,9 @@ const CONCERN_SPOKEN: Record<string, string> = {
   oiliness: "the look of shine",
   moisture: "how hydrated your skin looks",
   texture: "how smooth your skin looks",
+  pore: "the look of your pores",
+  radiance: "how radiant your skin looks",
+  firmness: "how firm your skin looks",
 };
 
 function band(score: number): string {

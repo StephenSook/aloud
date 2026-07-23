@@ -10,13 +10,13 @@ Prefer no install? The web app runs on any phone in the browser: **[aloudbeauty.
 
 <table>
   <tr>
-    <td align="center"><img src="docs/qr/android.png" width="160" alt="QR code to install the Aloud Android APK"><br><b>Android</b><br><sub>scan to install the APK</sub></td>
-    <td align="center"><b>iOS</b><br><sub>TestFlight link<br>coming soon</sub></td>
+    <td align="center"><img src="docs/qr/ios.png" width="160" alt="QR code to the Aloud iOS TestFlight beta"><br><b>iOS</b><br><sub>TestFlight beta</sub></td>
+    <td align="center"><img src="docs/qr/android.png" width="160" alt="QR code to install the Aloud Android APK"><br><b>Android</b><br><sub>installable APK</sub></td>
   </tr>
 </table>
 
+- **iOS**: scan the code, or open [testflight.apple.com/join/AKWHYekX](https://testflight.apple.com/join/AKWHYekX) in the TestFlight app.
 - **Android**: scan the code, or download the APK from [Releases](https://github.com/StephenSook/aloud/releases/latest); allow "install unknown apps" and tap to install.
-- **iOS**: a TestFlight build is in progress; until then, open the web app in Safari.
 
 The native apps are Capacitor shells around the same live web app, so they stay current with every web deploy. Build details in [`docs/NATIVE.md`](docs/NATIVE.md).
 

@@ -6,17 +6,17 @@
 
 ## Get the app
 
+Prefer no install? The web app runs on any phone in the browser: **[aloudbeauty.vercel.app](https://aloudbeauty.vercel.app)**. For the native apps, scan:
+
 <table>
   <tr>
-    <td align="center"><img src="docs/qr/live.png" width="150" alt="QR code linking to the Aloud web app"><br><b>Web app</b><br><sub>any phone, no install</sub></td>
-    <td align="center"><img src="docs/qr/android.png" width="150" alt="QR code linking to the Android APK release"><br><b>Android</b><br><sub>installable APK</sub></td>
-    <td align="center"><img src="docs/qr/github.png" width="150" alt="QR code linking to the GitHub repository"><br><b>Source</b><br><sub>GitHub</sub></td>
+    <td align="center"><img src="docs/qr/android.png" width="160" alt="QR code to install the Aloud Android APK"><br><b>Android</b><br><sub>scan to install the APK</sub></td>
+    <td align="center"><b>iOS</b><br><sub>TestFlight link<br>coming soon</sub></td>
   </tr>
 </table>
 
-- **Web app** (primary): [aloudbeauty.vercel.app](https://aloudbeauty.vercel.app). Works on any phone in the browser, no install, no store.
-- **Android**: download the APK from [Releases](https://github.com/StephenSook/aloud/releases/latest), allow "install unknown apps", and tap to install.
-- **iOS**: runs as the web app in Safari today; a TestFlight build is in progress.
+- **Android**: scan the code, or download the APK from [Releases](https://github.com/StephenSook/aloud/releases/latest); allow "install unknown apps" and tap to install.
+- **iOS**: a TestFlight build is in progress; until then, open the web app in Safari.
 
 The native apps are Capacitor shells around the same live web app, so they stay current with every web deploy. Build details in [`docs/NATIVE.md`](docs/NATIVE.md).
 

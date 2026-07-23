@@ -4,6 +4,22 @@
 
 **Live:** https://aloudbeauty.vercel.app · Built for the YouCam API Skin AI & Apparel VTO Hackathon (Skin AI topic).
 
+## Get the app
+
+<table>
+  <tr>
+    <td align="center"><img src="docs/qr/live.png" width="150" alt="QR code linking to the Aloud web app"><br><b>Web app</b><br><sub>any phone, no install</sub></td>
+    <td align="center"><img src="docs/qr/android.png" width="150" alt="QR code linking to the Android APK release"><br><b>Android</b><br><sub>installable APK</sub></td>
+    <td align="center"><img src="docs/qr/github.png" width="150" alt="QR code linking to the GitHub repository"><br><b>Source</b><br><sub>GitHub</sub></td>
+  </tr>
+</table>
+
+- **Web app** (primary): [aloudbeauty.vercel.app](https://aloudbeauty.vercel.app). Works on any phone in the browser, no install, no store.
+- **Android**: download the APK from [Releases](https://github.com/StephenSook/aloud/releases/latest), allow "install unknown apps", and tap to install.
+- **iOS**: runs as the web app in Safari today; a TestFlight build is in progress.
+
+The native apps are Capacitor shells around the same live web app, so they stay current with every web deploy. Build details in [`docs/NATIVE.md`](docs/NATIVE.md).
+
 ## How it works (the four flows)
 
 1. **Talk** (`/talk`): a hands-free voice conversation over WebRTC (OpenAI Realtime). The model calls real tools: EU CosIng ingredient lookup, EU fragrance-allergen check, and barcode product lookup. Every reply is mirrored as text.

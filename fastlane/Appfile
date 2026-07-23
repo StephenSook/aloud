@@ -1,0 +1,3 @@
+app_identifier("com.aloudbeauty.app")
+# Apple team id and the App Store Connect credentials are supplied at runtime
+# through environment variables (see docs/IOS_TESTFLIGHT.md), never committed.

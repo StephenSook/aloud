@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import dynamic from "next/dynamic";
+import { FlowHeader } from "@/components/FlowHeader";
 import { LiveRegion } from "@/components/LiveRegion";
 import { earcons, speakCue } from "@/lib/audio-cues";
 import {
@@ -209,6 +210,7 @@ export default function ScanPage() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-xl flex-col items-center gap-6 px-6 py-12">
+      <FlowHeader />
       <h1 className="display text-4xl">Scan a product</h1>
       <LiveRegion message={announcement} assertive />
 
@@ -263,7 +265,7 @@ export default function ScanPage() {
             />
             <button
               type="submit"
-              className="btn-ghost"
+              className="btn-ghost shrink-0 whitespace-nowrap"
             >
               Look up
             </button>

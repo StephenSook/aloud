@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import dynamic from "next/dynamic";
+import { FlowHeader } from "@/components/FlowHeader";
 import { LiveRegion } from "@/components/LiveRegion";
 
 const VoiceSession = dynamic(
@@ -30,6 +31,7 @@ export default function TalkPage() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-xl flex-col items-center gap-6 px-6 py-12">
+      <FlowHeader />
       <h1 className="display text-4xl">Talk with Aloud</h1>
       <p className="max-w-md text-lg leading-8 text-[var(--paper-dim)]">
         A live voice conversation. Ask about ingredients, allergens, or a

@@ -33,11 +33,36 @@ html {
 
 body {
   background:
+    radial-gradient(75% 55% at 50% -5%, color-mix(in srgb, var(--gold) 8%, var(--ink-soft)) 0%, transparent 60%),
     radial-gradient(120% 90% at 50% 0%, #171310 0%, var(--ink) 55%),
     var(--ink);
   color: var(--foreground);
   font-family: var(--font-geist-sans), sans-serif;
   min-height: 100vh;
+}
+
+/*
+ * A fine, static film grain over the ink for depth. Sits behind all content
+ * (z-index -1) so it never touches text contrast, and it is static so it needs
+ * no reduced-motion handling.
+ */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
+}
+
+/* Form controls adopt the palette instead of the browser's blue. */
+input[type="radio"],
+input[type="checkbox"] {
+  accent-color: var(--gold);
+  width: 1.15rem;
+  height: 1.15rem;
 }
 
 ::selection {

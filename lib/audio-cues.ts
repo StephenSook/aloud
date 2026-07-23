@@ -6,20 +6,33 @@
  * text through the ARIA live region).
  *
  * Everything starts inside a user gesture: iOS blocks audio otherwise.
+ *
+ * ONE shared AudioContext for the whole app. iOS Safari caps the number of
+ * AudioContexts (about four) and creating a fresh one per beeper/earcon
+ * exhausts that limit; a single reused, resumed context avoids it.
  */
 
+let sharedCtx: AudioContext | null = null;
+
+function getCtx(): AudioContext | null {
+  if (typeof window === "undefined" || !("AudioContext" in window)) return null;
+  try {
+    if (!sharedCtx || sharedCtx.state === "closed") sharedCtx = new AudioContext();
+    void sharedCtx.resume();
+    return sharedCtx;
+  } catch {
+    return null;
+  }
+}
+
 export class Beeper {
-  private ctx: AudioContext | null = null;
   private timer: ReturnType<typeof setTimeout> | null = null;
   private proximity = 0;
   private running = false;
 
   /** Call from a tap handler. */
   start() {
-    if (!this.ctx) {
-      this.ctx = new AudioContext();
-    }
-    void this.ctx.resume();
+    if (!getCtx()) return;
     this.running = true;
     this.schedule();
   }
@@ -38,16 +51,17 @@ export class Beeper {
   }
 
   private beep(freq: number, duration: number) {
-    if (!this.ctx) return;
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
+    const ctx = getCtx();
+    if (!ctx) return;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
     osc.frequency.value = freq;
     osc.type = "sine";
-    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-    osc.connect(gain).connect(this.ctx.destination);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.connect(gain).connect(ctx.destination);
     osc.start();
-    osc.stop(this.ctx.currentTime + duration);
+    osc.stop(ctx.currentTime + duration);
   }
 
   /** Rising two-tone chime on successful capture. */
@@ -65,9 +79,9 @@ export class Beeper {
 
 /**
  * One-shot earcons: short, distinct sounds that carry meaning without words,
- * so a screen-reader user hears the outcome before the sentence starts. Each
- * creates a short-lived AudioContext (must be called from a user gesture chain
- * on iOS). Kept low and brief so they never fight the spoken read.
+ * so a screen-reader user hears the outcome before the sentence starts. They
+ * reuse the single shared AudioContext, kept low and brief so they never fight
+ * the spoken read.
  */
 function tone(ctx: AudioContext, freq: number, start: number, duration: number, gainPeak = 0.12) {
   const osc = ctx.createOscillator();
@@ -84,12 +98,10 @@ function tone(ctx: AudioContext, freq: number, start: number, duration: number, 
 }
 
 function withContext(play: (ctx: AudioContext) => void) {
-  if (typeof window === "undefined" || !("AudioContext" in window)) return;
+  const ctx = getCtx();
+  if (!ctx) return;
   try {
-    const ctx = new AudioContext();
-    void ctx.resume();
     play(ctx);
-    setTimeout(() => void ctx.close(), 1200);
   } catch {
     // audio unavailable is fine; the spoken read still conveys everything
   }

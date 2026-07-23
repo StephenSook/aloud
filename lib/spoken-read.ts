@@ -54,7 +54,7 @@ export function composeProductRead(lookup: ProductLookup, needsText?: string): P
   if (lookup.status === "not_found") {
     return {
       summary:
-        "I could not find this product by its barcode. We can try the label instead: point the camera at the ingredients panel, or tell me the product name.",
+        "This barcode is not in the free product database yet, which is common for many products. No problem: point the camera at the ingredients panel and I will read it straight off the label.",
       fullList: null,
     };
   }

@@ -70,8 +70,8 @@ describe("product title dedup", () => {
 describe("composeProductRead (live-captured OBF fixtures)", () => {
   it("misses speak the designed fallback, not an error", () => {
     const read = composeProductRead(obfFixture("3600523971282"));
-    expect(read.summary).toMatch(/could not find this product/i);
-    expect(read.summary).toMatch(/label|name/i);
+    expect(read.summary).toMatch(/not in the free product database/i);
+    expect(read.summary).toMatch(/label/i);
     expect(read.fullList).toBeNull();
   });
 

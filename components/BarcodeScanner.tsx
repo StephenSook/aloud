@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Beeper, speakCue } from "@/lib/audio-cues";
+import { stopScanner } from "@/lib/scanner-teardown";
 
 /**
  * Accessible barcode scanner. html5-qrcode is the single integration:
@@ -92,12 +93,12 @@ export function BarcodeScanner({
             setStatus(found);
             onGuidance(found);
             speakCue(found, true);
-            // Fully tear down html5-qrcode (removes the injected <video>) BEFORE
-            // handing control back to the parent. onDecoded flips the page phase,
-            // which unmounts this component; if the scanner is still mid-teardown
-            // the two DOM mutations race and iOS Safari throws into the error
-            // boundary. Awaiting stop() serialises them.
-            await instance.stop().catch(() => undefined);
+            // Tear the scanner down safely before handing control back to the
+            // parent. onDecoded flips the page phase, which unmounts this
+            // component and runs the cleanup below; stopping here first avoids a
+            // teardown race, and stopScanner swallows html5-qrcode's synchronous
+            // "not running" throw so it can never reach the error boundary.
+            await stopScanner(instance);
             if (cancelled) return;
             onDecoded(text);
           },
@@ -119,9 +120,7 @@ export function BarcodeScanner({
       cancelled = true;
       if (coach) clearInterval(coach);
       beeper.stop();
-      if (scanner) {
-        void scanner.stop().then(() => scanner?.clear()).catch(() => undefined);
-      }
+      void stopScanner(scanner);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

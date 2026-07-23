@@ -11,9 +11,11 @@ export default function Error({ error, reset }: { error: Error & { digest?: stri
       navigator.sendBeacon?.(
         "/api/clientlog",
         JSON.stringify({
-          message: error.message,
-          stack: error.stack,
-          where: `error-boundary digest=${error.digest ?? "none"}`,
+          // A thrown string/non-Error has no .message or .stack; String(error)
+          // captures its actual text so the log is never empty.
+          message: error?.message || String(error),
+          stack: error?.stack || "",
+          where: `error-boundary name=${error?.name ?? typeof error} digest=${error.digest ?? "none"}`,
           ua: navigator.userAgent,
         }),
       );

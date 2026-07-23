@@ -31,6 +31,22 @@ Register the bundle id + app record via the API key (fast, no build)
 
 Build the iOS shell and upload to TestFlight (internal testing, no review)
 
+### ios status
+
+```sh
+[bundle exec] fastlane ios status
+```
+
+Report the live TestFlight build + tester status
+
+### ios distribute
+
+```sh
+[bundle exec] fastlane ios distribute
+```
+
+Make the latest build testable: answer export compliance, create the internal group, add the account holder
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

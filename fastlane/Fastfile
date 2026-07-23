@@ -198,4 +198,40 @@ platform :ios do
     end
     UI.important("PUBLIC LINK: #{ext.public_link.inspect}")
   end
+
+  desc "Set TestFlight test info + submit the latest build for external beta review"
+  lane :review do
+    api_key
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    build = Spaceship::ConnectAPI::Build.all(app_id: app.id, limit: 1).first
+
+    # 1. Test Information (required before external review can be submitted).
+    locs = app.get_beta_app_localizations
+    (locs.find { |l| l.locale == "en-US" } || locs.first)&.update(attributes: {
+      feedback_email: "stephensookra@gmail.com",
+      marketing_url: "https://aloudbeauty.vercel.app",
+      privacy_policy_url: "https://aloudbeauty.vercel.app/privacy",
+      description: "A voice-first, accessibility-first skincare assistant for blind and low-vision shoppers. Scan a product and hear what is in it, capture a selfie without sight and hear an honest read of your skin, all operable with the screen off.",
+    })
+    UI.success("Set TestFlight test info (privacy URL, feedback email, description)")
+
+    # 2. What to test on this build.
+    build.get_beta_build_localizations.each do |bl|
+      begin
+        bl.update(attributes: {
+          whats_new: "Scan products and hear their ingredients, hear an honest read of your skin, and talk to Aloud, all with the screen off.",
+        })
+      rescue => e
+        UI.message("what-to-test skipped: #{e.message}")
+      end
+    end
+
+    # 3. Submit for external beta review (contact defaults from the account).
+    begin
+      build.post_beta_app_review_submission
+      UI.success("Submitted build v#{build.version} for external beta review")
+    rescue => e
+      UI.important("Submit for review failed: #{e.message}")
+    end
+  end
 end

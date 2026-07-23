@@ -1,7 +1,7 @@
 default_platform(:ios)
 
 APP_ID = "com.aloudbeauty.app"
-APP_NAME = "Aloud"
+APP_NAME = "Aloud Beauty"  # App Store listing name ("Aloud" was globally taken); home-screen name stays "Aloud" via CFBundleDisplayName
 PROJECT = "ios/App/App.xcodeproj"
 
 # Build the iOS shell and upload it to TestFlight with zero interactive prompts,
@@ -9,29 +9,59 @@ PROJECT = "ios/App/App.xcodeproj"
 # App Review, so the build is installable on the account holder's iPhone as soon
 # as it finishes processing. See docs/IOS_TESTFLIGHT.md for the four env vars.
 platform :ios do
-  desc "Build the iOS shell and upload to TestFlight (internal testing, no review)"
-  lane :beta do
-    key = app_store_connect_api_key(
+  # Authenticate with the API key AND set the global Spaceship token so the
+  # Connect API calls below (bundle id + app record) are authenticated too.
+  private_lane :api_key do
+    app_store_connect_api_key(
       key_id: ENV.fetch("ASC_KEY_ID"),
       issuer_id: ENV.fetch("ASC_ISSUER_ID"),
       key_filepath: ENV.fetch("ASC_KEY_PATH"),
+      set_spaceship_token: true,
     )
-    team_id = ENV.fetch("APPLE_TEAM_ID")
+  end
 
-    # 1. Create the App Store Connect app record if it does not exist yet.
-    begin
-      produce(
-        app_identifier: APP_ID,
-        app_name: APP_NAME,
-        api_key: key,
-        skip_devices: true,
-      )
-    rescue => e
-      UI.important("produce skipped (the app record likely already exists): #{e.message}")
+  # Ensure the bundle id and the app record exist. `produce` is Apple-ID based
+  # and cannot use the API key, so create both directly through the Connect API,
+  # which the key is allowed to do.
+  private_lane :ensure_records do
+    bundle = Spaceship::ConnectAPI::BundleId.all.find { |b| b.identifier == APP_ID }
+    if bundle.nil?
+      bundle = Spaceship::ConnectAPI::BundleId.create(name: "Aloud", identifier: APP_ID, platform: "IOS")
+      UI.success("Registered bundle id #{APP_ID}")
+    else
+      UI.message("Bundle id #{APP_ID} already registered")
     end
 
-    # 2. Distribution certificate + App Store provisioning profile, both created
-    #    on demand through the API key (no manual portal steps).
+    # Apple's App Store Connect API forbids creating app records (POST /apps is
+    # not allowed), so the app record is created once in the web UI. Everything
+    # else here is fully automated.
+    if Spaceship::ConnectAPI::App.find(APP_ID).nil?
+      UI.user_error!(
+        "The app record for #{APP_ID} does not exist yet, and Apple's API cannot " \
+        "create it. Create it once at https://appstoreconnect.apple.com/apps " \
+        "(New App -> iOS, name '#{APP_NAME}', bundle id #{APP_ID}, SKU aloudbeauty-app), " \
+        "then re-run `fastlane ios beta`. The bundle id is already registered.",
+      )
+    else
+      UI.message("App record for #{APP_ID} exists")
+    end
+  end
+
+  desc "Register the bundle id + app record via the API key (fast, no build)"
+  lane :bootstrap do
+    api_key
+    ensure_records
+  end
+
+  desc "Build the iOS shell and upload to TestFlight (internal testing, no review)"
+  lane :beta do
+    key = api_key
+    team_id = ENV.fetch("APPLE_TEAM_ID")
+
+    # 1. Bundle id + app record.
+    ensure_records
+
+    # 2. Distribution certificate + App Store provisioning profile via the key.
     cert(api_key: key, team_id: team_id)
     sigh(app_identifier: APP_ID, api_key: key, team_id: team_id)
 
@@ -69,5 +99,76 @@ platform :ios do
     )
 
     UI.success("Uploaded to TestFlight. Add yourself as an internal tester in App Store Connect, then install from the TestFlight app on your iPhone.")
+  end
+
+  desc "Report the live TestFlight build + tester status"
+  lane :status do
+    api_key
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    UI.important("App: #{app.name} (#{app.id})")
+    builds = Spaceship::ConnectAPI::Build.all(app_id: app.id, includes: "buildBetaDetail", limit: 5)
+    UI.important("Builds: #{builds.size}")
+    builds.each do |b|
+      d = (b.build_beta_detail rescue nil)
+      UI.message("  v#{b.version} processing=#{b.processing_state} encryption=#{b.uses_non_exempt_encryption.inspect} internal=#{d&.internal_build_state} external=#{d&.external_build_state} expired=#{b.expired}")
+    end
+    groups = app.get_beta_groups(includes: "betaTesters")
+    UI.important("Beta groups: #{groups.size}")
+    groups.each do |g|
+      t = (g.beta_testers rescue [])
+      emails = (t || []).map { |x| x.email rescue nil }.compact.join(", ")
+      UI.message("  '#{g.name}' internal=#{g.is_internal_group} allBuilds=#{g.has_access_to_all_builds} testers=#{(t || []).size} [#{emails}]")
+    end
+  end
+
+  desc "Make the latest build testable: answer export compliance, create the internal group, add the account holder"
+  lane :distribute do
+    api_key
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    build = Spaceship::ConnectAPI::Build.all(app_id: app.id, includes: "buildBetaDetail", limit: 1).first
+    UI.user_error!("No build found") if build.nil?
+    UI.important("Build v#{build.version}")
+
+    # 1. Export compliance: the app uses only standard HTTPS, which is exempt.
+    if build.uses_non_exempt_encryption.nil?
+      build.update(attributes: { uses_non_exempt_encryption: false })
+      UI.success("Answered export compliance (uses_non_exempt_encryption = false)")
+    else
+      UI.message("Export compliance already answered: #{build.uses_non_exempt_encryption}")
+    end
+
+    # 2. An internal beta group with access to all builds.
+    internal = app.get_beta_groups.find(&:is_internal_group)
+    if internal.nil?
+      internal = app.create_beta_group(
+        group_name: "Internal Testers",
+        is_internal_group: true,
+        has_access_to_all_builds: true,
+        public_link_enabled: nil,
+        public_link_limit: nil,
+        public_link_limit_enabled: nil,
+      )
+      UI.success("Created internal beta group 'Internal Testers'")
+    else
+      UI.message("Internal group already exists: #{internal.name}")
+    end
+
+    # 3. Assign this build to the group (belt and suspenders alongside all-builds access).
+    begin
+      build.add_beta_groups(beta_groups: [internal])
+      UI.success("Assigned the build to the internal group")
+    rescue => e
+      UI.message("Build/group link: #{e.message}")
+    end
+
+    # 4. Add the account holder as an internal tester so the invite reaches them.
+    begin
+      internal.post_bulk_beta_tester_assignments(
+        beta_testers: [{ email: "stephensookra@gmail.com", firstName: "Stephen", lastName: "Sookra" }],
+      )
+      UI.success("Added stephensookra@gmail.com as an internal tester")
+    rescue => e
+      UI.important("Could not add the tester via API (#{e.message}). Add yourself once in App Store Connect -> TestFlight -> Internal Testing -> Internal Testers -> +.")
+    end
   end
 end

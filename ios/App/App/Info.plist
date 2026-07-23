@@ -21,7 +21,9 @@
 	<key>CFBundleShortVersionString</key>
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<string>202607230327</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSCameraUsageDescription</key>
 	<string>Aloud uses the camera to frame your face by sound for a skin reading, and to scan product barcodes and labels. Photos are processed for the session only and never stored.</string>
 	<key>NSMicrophoneUsageDescription</key>

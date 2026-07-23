@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { FlowHeader } from "@/components/FlowHeader";
 import { LiveRegion } from "@/components/LiveRegion";
 import { earcons, speakCue } from "@/lib/audio-cues";
+import { addScannedProduct, getScannedProducts } from "@/lib/session-products";
 import {
   addToHistory,
   getServerSnapshot,
@@ -25,6 +26,10 @@ type ProductReadResponse = {
   read: { summary: string; fullList: string | null };
 };
 
+// Stable no-op subscribe: the scanned-product count is re-read on each render
+// (scans already trigger renders), so no external subscription is needed.
+const noopSubscribe = () => () => {};
+
 /**
  * Accessible product scanning: beep-guided barcode find -> layered spoken
  * read -> drill-in (full list, follow-up questions through the agent).
@@ -44,8 +49,19 @@ export default function ScanPage() {
   const [productStatus, setProductStatus] = useState("");
   const [readingLabel, setReadingLabel] = useState(false);
   const [needs, setNeeds] = useState("");
+  const [routine, setRoutine] = useState("");
+  const [buildingRoutine, setBuildingRoutine] = useState(false);
   const historySnapshot = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const history = useMemo(() => parseHistory(historySnapshot), [historySnapshot]);
+
+  // Count of products scanned this session. Read through useSyncExternalStore so
+  // the server snapshot (0) and first client paint agree, then it reflects real
+  // storage on every subsequent render (scans trigger a render, refreshing it).
+  const scannedCount = useSyncExternalStore(
+    noopSubscribe,
+    () => getScannedProducts().length,
+    () => 0,
+  );
 
   const say = useCallback((text: string, force = false) => {
     setAnnouncement(text);
@@ -108,17 +124,13 @@ export default function ScanPage() {
         const title = body.read.summary.split(".")[0] ?? "";
         setProductTitle(title);
         setLastBarcode(barcode);
+        const ingredients = body.read.fullList ? body.read.fullList.split(", ") : [];
         try {
-          sessionStorage.setItem(
-            "aloud:lastScan",
-            JSON.stringify({
-              title,
-              ingredients: body.read.fullList ? body.read.fullList.split(", ") : [],
-            }),
-          );
+          sessionStorage.setItem("aloud:lastScan", JSON.stringify({ title, ingredients }));
           if (body.status === "found") {
             addToHistory({ barcode, title, at: Date.now() });
           }
+          if (ingredients.length > 0) addScannedProduct({ title, ingredients });
         } catch {
           // storage unavailable is fine; voice just starts without context
         }
@@ -207,6 +219,41 @@ export default function ScanPage() {
       setAsking(false);
     }
   }, [question, asking, productTitle, read, say]);
+
+  // Agentic routine builder: order the products scanned this session by their
+  // labeled cosmetic role, related to the skin read and stated needs.
+  const buildRoutine = useCallback(async () => {
+    const products = getScannedProducts();
+    if (products.length === 0) {
+      say("Scan a product or two first, then I can put them in order.", true);
+      return;
+    }
+    setBuildingRoutine(true);
+    say("Building a routine from what you scanned. This takes a few seconds.", true);
+    try {
+      let skin: { scores?: Record<string, number> } | undefined;
+      try {
+        const raw = sessionStorage.getItem("aloud:skinBaseline");
+        if (raw) skin = { scores: (JSON.parse(raw) as { scores?: Record<string, number> }).scores };
+      } catch {
+        // no skin read this session; the routine works from products alone
+      }
+      const res = await fetch("/api/routine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ products, skin, needs: needs.trim() || undefined }),
+      });
+      const body = (await res.json()) as { routine?: string; error?: string };
+      const spoken = body.routine ?? body.error ?? "I could not build the routine.";
+      setRoutine(spoken);
+      say(spoken, true);
+    } catch (err) {
+      console.error(err);
+      say("I could not build the routine just now. Try again.", true);
+    } finally {
+      setBuildingRoutine(false);
+    }
+  }, [needs, say]);
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-xl flex-col items-center gap-6 px-6 py-12">
@@ -413,6 +460,34 @@ export default function ScanPage() {
             </button>
           </form>
           {answer && <p className="text-base leading-7">{answer}</p>}
+
+          {scannedCount >= 1 && (
+            <div className="flex w-full flex-col items-center gap-3">
+              <button
+                type="button"
+                onClick={() => void buildRoutine()}
+                disabled={buildingRoutine}
+                className="btn-primary disabled:opacity-50"
+              >
+                {buildingRoutine
+                  ? "Building your routine"
+                  : `Build my routine from ${
+                      scannedCount === 1 ? "this product" : `these ${scannedCount} products`
+                    }`}
+              </button>
+              {routine && (
+                <div className="w-full rounded-2xl border hairline px-4 py-3 text-left">
+                  <h3 className="display text-xl">Your suggested routine</h3>
+                  <p className="mt-2 text-base leading-7 text-[var(--paper)]">{routine}</p>
+                  <p className="mt-2 text-sm text-[var(--paper-dim)]">
+                    A suggested order based on what the labels say. A dermatologist is
+                    the right person for skin-health questions.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="flex flex-col gap-3 sm:flex-row">
             <button
               type="button"

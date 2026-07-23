@@ -48,3 +48,17 @@ next-env.d.ts
 # IDE
 .vscode/
 .idea/
+
+# native build artifacts + iOS signing secrets (NEVER commit the API key)
+/android/local.properties
+*.p8
+*.p12
+*.mobileprovision
+*.cer
+fastlane/build/
+fastlane/certs/
+fastlane/profiles/
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/test_output/
+fastlane/.env*

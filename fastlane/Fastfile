@@ -1,0 +1,73 @@
+default_platform(:ios)
+
+APP_ID = "com.aloudbeauty.app"
+APP_NAME = "Aloud"
+PROJECT = "ios/App/App.xcodeproj"
+
+# Build the iOS shell and upload it to TestFlight with zero interactive prompts,
+# authenticated by an App Store Connect API key. Internal testing needs no Beta
+# App Review, so the build is installable on the account holder's iPhone as soon
+# as it finishes processing. See docs/IOS_TESTFLIGHT.md for the four env vars.
+platform :ios do
+  desc "Build the iOS shell and upload to TestFlight (internal testing, no review)"
+  lane :beta do
+    key = app_store_connect_api_key(
+      key_id: ENV.fetch("ASC_KEY_ID"),
+      issuer_id: ENV.fetch("ASC_ISSUER_ID"),
+      key_filepath: ENV.fetch("ASC_KEY_PATH"),
+    )
+    team_id = ENV.fetch("APPLE_TEAM_ID")
+
+    # 1. Create the App Store Connect app record if it does not exist yet.
+    begin
+      produce(
+        app_identifier: APP_ID,
+        app_name: APP_NAME,
+        api_key: key,
+        skip_devices: true,
+      )
+    rescue => e
+      UI.important("produce skipped (the app record likely already exists): #{e.message}")
+    end
+
+    # 2. Distribution certificate + App Store provisioning profile, both created
+    #    on demand through the API key (no manual portal steps).
+    cert(api_key: key, team_id: team_id)
+    sigh(app_identifier: APP_ID, api_key: key, team_id: team_id)
+
+    # 3. Point the Xcode project at that profile with manual signing.
+    update_code_signing_settings(
+      path: PROJECT,
+      use_automatic_signing: false,
+      team_id: team_id,
+      code_sign_identity: "Apple Distribution",
+      bundle_identifier: APP_ID,
+      profile_name: lane_context[SharedValues::SIGH_NAME],
+    )
+
+    # 4. A unique, increasing build number so every upload is accepted.
+    increment_build_number(
+      xcodeproj: PROJECT,
+      build_number: ENV["BUILD_NUMBER"] || Time.now.strftime("%Y%m%d%H%M"),
+    )
+
+    # 5. Archive and export an App Store ipa.
+    build_app(
+      project: PROJECT,
+      scheme: "App",
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: "fastlane/build",
+      clean: true,
+    )
+
+    # 6. Upload to TestFlight. Internal testers get it after processing, no review.
+    upload_to_testflight(
+      api_key: key,
+      skip_waiting_for_build_processing: true,
+      distribute_external: false,
+    )
+
+    UI.success("Uploaded to TestFlight. Add yourself as an internal tester in App Store Connect, then install from the TestFlight app on your iPhone.")
+  end
+end

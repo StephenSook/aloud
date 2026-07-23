@@ -65,7 +65,21 @@ export function BarcodeScanner({
 
         await instance.start(
           { facingMode: "environment" },
-          { fps: 10, qrbox: undefined },
+          {
+            fps: 8,
+            // Scan a defined wide box, not the whole frame, and cap the stream
+            // at 720p. An unconstrained full-frame decode on an iPhone's native
+            // high-resolution camera exhausts memory and crashes iOS Safari.
+            qrbox: (vw: number, vh: number) => {
+              const width = Math.floor(Math.min(vw, vh * 1.6) * 0.85);
+              return { width, height: Math.floor(width * 0.55) };
+            },
+            videoConstraints: {
+              facingMode: "environment",
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+            },
+          },
           (text) => {
             if (decoded.current) return;
             decoded.current = true;

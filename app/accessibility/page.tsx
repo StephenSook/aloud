@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { FlowHeader } from "@/components/FlowHeader";
 
 export const metadata = {
   title: "Accessibility · Aloud",
@@ -8,6 +9,7 @@ export const metadata = {
 export default function AccessibilityPage() {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-2xl flex-col gap-6 px-6 py-16">
+      <FlowHeader />
       <h1 className="display text-4xl">Accessibility</h1>
 
       <p className="text-lg leading-8 text-[var(--paper)]">

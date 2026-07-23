@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 import dynamic from "next/dynamic";
+import { FlowHeader } from "@/components/FlowHeader";
 import { LiveRegion } from "@/components/LiveRegion";
 import { speakCue } from "@/lib/audio-cues";
 import { composeLookVerify, type Baseline, type ScoredOutput } from "@/lib/look-verify";
@@ -85,6 +86,7 @@ export default function VerifyPage() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-xl flex-col items-center gap-6 px-6 py-12">
+      <FlowHeader />
       <h1 className="display text-4xl">Verify your look</h1>
       <LiveRegion message={announcement} assertive />
 

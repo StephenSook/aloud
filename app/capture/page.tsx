@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { FlowHeader } from "@/components/FlowHeader";
 import { LiveRegion } from "@/components/LiveRegion";
 import type { CaptureMetrics } from "@/components/CameraCapture";
 import { composeSkinRead } from "@/lib/skin-read";
@@ -153,6 +154,7 @@ export default function CapturePage() {
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-xl flex-col items-center gap-6 px-6 py-12">
+      <FlowHeader />
       <h1 className="display text-4xl">Skin capture</h1>
       <LiveRegion message={announcement} assertive />
 

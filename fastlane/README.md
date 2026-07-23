@@ -47,6 +47,14 @@ Report the live TestFlight build + tester status
 
 Make the latest build testable: answer export compliance, create the internal group, add the account holder
 
+### ios external
+
+```sh
+[bundle exec] fastlane ios external
+```
+
+Create an external group with a public TestFlight link and attach the latest build
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

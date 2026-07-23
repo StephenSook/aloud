@@ -171,4 +171,31 @@ platform :ios do
       UI.important("Could not add the tester via API (#{e.message}). Add yourself once in App Store Connect -> TestFlight -> Internal Testing -> Internal Testers -> +.")
     end
   end
+
+  desc "Create an external group with a public TestFlight link and attach the latest build"
+  lane :external do
+    api_key
+    app = Spaceship::ConnectAPI::App.find(APP_ID)
+    ext = app.get_beta_groups.find { |g| !g.is_internal_group && g.name == "Public" }
+    if ext.nil?
+      ext = app.create_beta_group(
+        group_name: "Public",
+        is_internal_group: false,
+        public_link_enabled: true,
+        public_link_limit_enabled: false,
+        public_link_limit: nil,
+      )
+      UI.success("Created external group 'Public' with a public link")
+    else
+      UI.message("External group 'Public' already exists")
+    end
+    build = Spaceship::ConnectAPI::Build.all(app_id: app.id, limit: 1).first
+    begin
+      build.add_beta_groups(beta_groups: [ext])
+      UI.success("Attached build v#{build.version} to the public group")
+    rescue => e
+      UI.message("Attach: #{e.message}")
+    end
+    UI.important("PUBLIC LINK: #{ext.public_link.inspect}")
+  end
 end

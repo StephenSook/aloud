@@ -1,7 +1,7 @@
 /**
  * Open Beauty Facts lookup (server-side). A miss returns HTTP 200 with
  * status 0, and products with a record but no parsed ingredients are common
- * (US coverage is thin) — both are normal states with spoken fallbacks,
+ * (US coverage is thin). Both are normal states with spoken fallbacks,
  * never errors.
  */
 

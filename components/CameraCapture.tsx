@@ -10,6 +10,21 @@ import {
 } from "@/lib/capture-guidance";
 import { Beeper, speakCue } from "@/lib/audio-cues";
 
+/**
+ * Vibrate where the Vibration API exists (Android Chrome). A silent no-op on
+ * iOS Safari, which does not implement it, so this is a progressive tactile
+ * layer on top of the audio guidance, never a dependency.
+ */
+function pulse(pattern: number | number[]) {
+  if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+    try {
+      navigator.vibrate(pattern);
+    } catch {
+      // unsupported or blocked; the audio cues carry the guidance
+    }
+  }
+}
+
 type FaceDetectorInstance = {
   detectForVideo: (
     video: HTMLVideoElement,
@@ -65,6 +80,8 @@ export function CameraCapture({
     const beeper = new Beeper();
     const tracker = new SteadinessTracker();
     stopped.current = false;
+    // Pulse once when framing first locks in, re-armed if the face drifts out.
+    let framedPulsed = false;
 
     async function run() {
       try {
@@ -127,6 +144,17 @@ export function CameraCapture({
           beeper.setProximity(guidance.proximity);
           announce(guidance);
 
+          // Tactile "you are framed, hold still" the moment framing locks in,
+          // complementing the spoken "Hold still." Re-arms when the face drifts.
+          if (guidance.state === "hold") {
+            if (!framedPulsed) {
+              framedPulsed = true;
+              pulse(40);
+            }
+          } else {
+            framedPulsed = false;
+          }
+
           const ready = tracker.update(
             guidance,
             box,
@@ -137,6 +165,7 @@ export function CameraCapture({
             stopped.current = true;
             beeper.stop();
             beeper.success();
+            pulse([90, 50, 90]); // distinct double buzz: the photo was taken
             const cue = "Captured. Sending for analysis.";
             setStatus(cue);
             onGuidance(cue);

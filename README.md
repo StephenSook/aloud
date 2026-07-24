@@ -16,7 +16,7 @@ Built for the **YouCam API Skin AI & Apparel VTO Hackathon** on the Perfect Corp
 | To verify... | Go here |
 |---|---|
 | **Try it, zero setup** | [aloudbeauty.vercel.app](https://aloudbeauty.vercel.app) on any phone, screen reader on, screen off |
-| **The 3-minute demo** | [Demo video](https://youtu.be/RndOBX249KE) (real device recordings, real products, live API) |
+| **The 3-minute demo** | [Demo video](https://youtu.be/2rPntXmDqHQ) (real device recordings, real products, live API) |
 | **Claims are wired, not aspirational** | [`docs/FACTS.md`](docs/FACTS.md) wired-integration ledger, grep any row in the shipped code |
 | **It reproduces on your machine** | [Quickstart](#quickstart): clone, `npm install`, gates and build pass with zero keys |
 | **Safety is engineered** | [`docs/GUARDRAILS.md`](docs/GUARDRAILS.md) + `npm run guardrail` (CI-blocking claim linter) |
@@ -25,7 +25,7 @@ Built for the **YouCam API Skin AI & Apparel VTO Hackathon** on the Perfect Corp
 
 | Surface | URL |
 |---|---|
-| Demo video (2:55) | https://youtu.be/RndOBX249KE |
+| Demo video (2:55) | https://youtu.be/2rPntXmDqHQ |
 | Web app (primary) | https://aloudbeauty.vercel.app |
 | iOS (TestFlight) | https://testflight.apple.com/join/AKWHYekX |
 | Android (APK) | https://github.com/StephenSook/aloud/releases/latest |

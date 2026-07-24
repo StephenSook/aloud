@@ -44,7 +44,10 @@ async function readIngredients(dataUrl: string): Promise<string[]> {
       return parsed.ingredients.filter((n): n is string => typeof n === "string");
     }
   } catch {
-    // fall through to empty
+    // Unparseable model output is treated as an empty read, but keep the
+    // debugging signal: otherwise garbage responses look identical in the
+    // logs to genuinely unreadable labels.
+    console.error("label read: unparseable vision response", text.slice(0, 200));
   }
   return [];
 }
@@ -76,7 +79,13 @@ export async function POST(request: NextRequest) {
     let names = await readIngredients(dataUrl);
     if (names.length === 0) names = await readIngredients(dataUrl);
 
-    return NextResponse.json({ read: composeLabelRead(names) });
+    // An empty read is a FAILURE, not a product with no ingredients: the
+    // client must keep its retry affordance and must not render the
+    // "no allergen listed" banner off a read that read nothing.
+    return NextResponse.json({
+      status: names.length === 0 ? "read_failed" : "read_ok",
+      read: composeLabelRead(names),
+    });
   } catch (err) {
     console.error("label read failed", err);
     return NextResponse.json(

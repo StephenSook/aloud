@@ -63,3 +63,8 @@ fastlane/Preview.html
 fastlane/test_output/
 fastlane/.env*
 *.certSigningRequest
+
+# @capacitor/assets night-mode / low-dpi generated noise (not shipped)
+android/app/src/main/res/drawable-*-night-*/
+android/app/src/main/res/drawable-night/
+android/app/src/main/res/*-ldpi/

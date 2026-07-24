@@ -54,8 +54,9 @@ that gap.
 Aloud is built on the Perfect Corp YouCam AI Skin Analysis API, wired
 end-to-end, not wrapped. A server-side route registers the image
 (`POST /s2s/v2.0/file/skin-analysis`), uploads the bytes to the presigned URL,
-creates the task (`POST /s2s/v2.0/task/skin-analysis`, SD concerns,
-`format: json`), and the client polls the result through a thin proxy. The
+creates the task (`POST /s2s/v2.0/task/skin-analysis`, seven cosmetic SD
+concerns at the 12-unit tier, `format: json`), and the client polls the result
+through a thin proxy. The
 Bearer key never leaves the server. Response shapes and the stringified error
 tuples are pinned by fixtures captured from real API runs. Every spoken skin
 statement traces to a `ui_score`; the face image is never sent to a general
@@ -64,7 +65,9 @@ vision model to freely describe it.
 Around that core runs an agentic tool loop (Vercel AI SDK) whose tools reach
 the full EU CosIng inventory of 33,116 active ingredients, the EU
 fragrance-allergen list from Regulation 2023/1545, and Open Beauty Facts, plus
-a WebRTC voice layer over the OpenAI Realtime API. Aloud also speaks Perfect
+a WebRTC voice layer over the OpenAI Realtime API. The same tools compose the
+products a shopper has scanned in a session into a plain, ordered
+morning-and-evening routine, flagging any listed allergens as it goes. Aloud also speaks Perfect
 Corp's own language: the skin analysis can be routed through Perfect Corp's
 native YouCam MCP server, the sponsor's 2026 agentic surface, and returns the
 same real scores. On a real iPhone the non-visual capture passed its kill
@@ -101,12 +104,15 @@ Next.js, TypeScript, Vercel, Perfect Corp YouCam AI Skin Analysis API, Perfect
 Corp YouCam Skin Tone Analysis API, Perfect Corp native YouCam MCP server,
 OpenAI Realtime API, OpenAI vision (label reader), Vercel AI SDK, Deepgram
 (fallback STT), ElevenLabs (fallback TTS), MediaPipe Tasks Vision, html5-qrcode,
-EU CosIng, EU fragrance-allergen list (Reg 2023/1545), Open Beauty Facts.
+Capacitor (native iOS and Android shells), EU CosIng, EU fragrance-allergen list
+(Reg 2023/1545), Open Beauty Facts.
 
 ## Try it out
 
-- Live app: https://aloudbeauty.vercel.app
+- Live app (primary judge URL): https://aloudbeauty.vercel.app
 - Code: https://github.com/StephenSook/aloud
+- iOS native shell on TestFlight: https://testflight.apple.com/join/AKWHYekX
+- Android: installable APK (Capacitor shell of the same live app)
 
 ## Judging-criteria map (internal, not pasted)
 
@@ -130,5 +136,7 @@ EU CosIng, EU fragrance-allergen list (Reg 2023/1545), Open Beauty Facts.
 - [ ] Screenshots attached
 - [ ] Repo public, gitleaks clean, license present
 - [ ] Every "Built with" item confirmed present in shipped code (grep audit)
+- [ ] iOS TestFlight external review approved so the public link is live
+- [ ] Android APK reachable at a public download URL (or drop the line)
 - [ ] Em-dash and AI-tone sweep on all pasted copy
 - [ ] Submission ID / status / URL verified after submit

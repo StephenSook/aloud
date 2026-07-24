@@ -22,7 +22,7 @@ export default function AccessibilityPage() {
         <h2 className="display text-2xl">What we target</h2>
         <p className="leading-8 text-[var(--paper-dim)]">
           WCAG 2.1 Level AA. Every page is checked against the WCAG 2.1 A and AA
-          rule sets on every commit, and the build fails on a serious or
+          rule sets on every push and pull request, and the build fails on a serious or
           critical violation. Colors meet AA contrast, focus is always visible,
           motion respects the reduced-motion setting, and controls are keyboard
           operable and labelled.

@@ -160,10 +160,11 @@ export default function ScanPage() {
         form.append("image", file);
         const res = await fetch("/api/label", { method: "POST", body: form });
         const body = (await res.json()) as {
+          status?: string;
           read?: { summary: string; fullList: string | null };
           error?: string;
         };
-        if (body.read) {
+        if (body.read && body.status !== "read_failed") {
           setRead(body.read);
           setProductStatus("found");
           try {
@@ -178,6 +179,13 @@ export default function ScanPage() {
             // storage unavailable is fine
           }
           earconFor("found", body.read.summary);
+          say(body.read.summary, true);
+        } else if (body.read) {
+          // read_failed: honest miss semantics. Keep productStatus unchanged
+          // so the "Read the label with the camera" retry stays on screen,
+          // play the miss earcon (never the bright found note), and never
+          // render a "no allergen listed" banner off a read that read nothing.
+          earcons.miss();
           say(body.read.summary, true);
         } else {
           say(body.error ?? "I could not read the label. Try again.", true);

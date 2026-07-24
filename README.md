@@ -54,7 +54,7 @@ Everything is spoken, operable with no screen, and never makes a medical or trea
 
 ## Quickstart
 
-Requires Node 18+ and a Perfect Corp YouCam API key.
+Requires Node 20.9+ (CI runs Node 22) and a Perfect Corp YouCam API key.
 
 ```bash
 git clone https://github.com/StephenSook/aloud.git

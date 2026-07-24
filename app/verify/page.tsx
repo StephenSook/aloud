@@ -38,7 +38,8 @@ export default function VerifyPage() {
         form.append("image", new File([blob], "look.jpg", { type: "image/jpeg" }));
         const created = await fetch("/api/skin", { method: "POST", body: form });
         if (!created.ok) throw new Error(`create ${created.status}`);
-        const { taskId } = (await created.json()) as { taskId: string };
+        const { taskId } = (await created.json()) as { taskId?: string };
+        if (!taskId) throw new Error("no taskId in analysis response");
 
         const deadline = Date.now() + 60_000;
         while (Date.now() < deadline) {

@@ -16,8 +16,8 @@ Voice-first, accessibility-first skincare assistant for blind and low-vision use
 4. No identity inference, no persistence of skin data, consent before capture.
 5. Every core flow works with the screen off (ARIA live regions, managed focus, keyboard operable). Test with VoiceOver on a real iPhone.
 6. Every judged number comes from `docs/FACTS.md`; every integration claim needs a Wired: yes row there.
-7. MediaPipe and html5-qrcode are client-only: `"use client"` + dynamic import, WASM preloaded on the intro screen.
-8. getUserMedia and audio start inside a user tap. Request the camera stream once, reuse across views.
+7. MediaPipe and html5-qrcode are client-only: `"use client"` + dynamic import; the WASM runtime and model load from their CDNs when capture starts.
+8. getUserMedia and audio start inside a user tap. Each capture surface requests its own stream and stops every track on teardown.
 
 ## Commands
 

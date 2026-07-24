@@ -52,6 +52,13 @@ describe("toneCaveat", () => {
   it("is silent for a light tone in good light", () => {
     expect(toneCaveat({ band: "light", ita: 65, lightingPoor: false })).toBeNull();
   });
+  it("does not fail open when calibration never ran", () => {
+    // A failed tone check must not produce the most confident read: the
+    // unknown band speaks an approximate-numbers caveat.
+    expect(toneCaveat({ band: "unknown", ita: null, lightingPoor: false })).toMatch(
+      /could not double-check/i,
+    );
+  });
 });
 
 describe("composeSkinRead with tone", () => {

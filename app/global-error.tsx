@@ -4,6 +4,7 @@ export default function GlobalError({ reset }: { error: Error; reset: () => void
   return (
     <html lang="en">
       <body
+        role="alert"
         style={{
           background: "#0d0a08",
           color: "#e8e2d9",

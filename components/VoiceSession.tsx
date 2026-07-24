@@ -39,20 +39,31 @@ export function VoiceSession({
   const [state, setState] = useState<SessionState>("idle");
   const pcRef = useRef<RTCPeerConnection | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  // Set before any deliberate teardown so connection-drop handlers can tell an
+  // intentional stop from a dead line and do not talk over the real status.
+  const intentionalStopRef = useRef(false);
 
-  const stop = useCallback(() => {
+  // Tear down without announcing, so an error path can speak its own message
+  // LAST (otherwise "Voice session ended." overwrites the actionable error).
+  const teardown = useCallback(() => {
+    intentionalStopRef.current = true;
     pcRef.current?.close();
     pcRef.current = null;
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
+  }, []);
+
+  const stop = useCallback(() => {
+    teardown();
     setState("idle");
     onStatus("Voice session ended.");
-  }, [onStatus]);
+  }, [teardown, onStatus]);
 
-  useEffect(() => () => stop(), [stop]);
+  useEffect(() => () => teardown(), [teardown]);
 
   const start = useCallback(async () => {
     setState("connecting");
+    intentionalStopRef.current = false;
     onStatus("Connecting the voice line.");
     try {
       const tokenRes = await fetch("/api/voice/token", { method: "POST" });
@@ -66,6 +77,22 @@ export function VoiceSession({
       audioEl.autoplay = true;
       pc.ontrack = (e) => {
         audioEl.srcObject = e.streams[0];
+        // autoplay alone gives no signal when playback is blocked; play()
+        // returns a promise whose rejection we can at least announce.
+        void audioEl.play().catch(() => {
+          onStatus("If you cannot hear the voice, tap the screen once so the browser allows sound, then speak again.");
+        });
+      };
+
+      // A dead line must never keep claiming "Live": announce the drop and
+      // reset so the start button comes back.
+      pc.onconnectionstatechange = () => {
+        if (intentionalStopRef.current) return;
+        if (pc.connectionState === "failed" || pc.connectionState === "disconnected") {
+          teardown();
+          setState("idle");
+          onStatus("The voice line dropped. Tap start to reconnect.");
+        }
       };
 
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -77,8 +104,17 @@ export function VoiceSession({
       const send = (message: Record<string, unknown>) => {
         if (dc.readyState === "open") {
           dc.send(JSON.stringify({ event_id: crypto.randomUUID(), ...message }));
+        } else {
+          console.error("voice: dropped message, data channel not open", message.type);
         }
       };
+
+      dc.addEventListener("close", () => {
+        if (intentionalStopRef.current) return;
+        teardown();
+        setState("idle");
+        onStatus("The voice line dropped. Tap start to reconnect.");
+      });
 
       dc.addEventListener("open", () => {
         let lastScan: LastScan | null = null;
@@ -122,17 +158,33 @@ export function VoiceSession({
               } catch {
                 args = {};
               }
-              void executeVoiceTool(item.name, args).then((output) => {
-                send({
-                  type: "conversation.item.create",
-                  item: {
-                    type: "function_call_output",
-                    call_id: item.call_id,
-                    output: JSON.stringify(output),
-                  },
+              void executeVoiceTool(item.name, args)
+                .then((output) => {
+                  send({
+                    type: "conversation.item.create",
+                    item: {
+                      type: "function_call_output",
+                      call_id: item.call_id,
+                      output: JSON.stringify(output),
+                    },
+                  });
+                  send({ type: "response.create" });
+                })
+                .catch((err: unknown) => {
+                  // Without this, a failed lookup leaves the model waiting
+                  // forever and the user hears permanent silence. Hand the
+                  // model an explicit error so it can say it does not know.
+                  console.error("voice tool failed", err);
+                  send({
+                    type: "conversation.item.create",
+                    item: {
+                      type: "function_call_output",
+                      call_id: item.call_id,
+                      output: JSON.stringify({ error: "lookup unavailable right now" }),
+                    },
+                  });
+                  send({ type: "response.create" });
                 });
-                send({ type: "response.create" });
-              });
             }
             if (item.type === "message") {
               const transcript = item.content
@@ -159,13 +211,15 @@ export function VoiceSession({
       await pc.setRemoteDescription({ type: "answer", sdp: await sdpResponse.text() });
     } catch (err) {
       console.error("voice session failed", err);
+      // Tear down silently FIRST so this actionable message is the last
+      // thing announced (stop() would overwrite it with "session ended").
+      teardown();
       setState("error");
       onStatus(
         "The voice line could not connect. Check microphone permission and the connection, then try again.",
       );
-      stop();
     }
-  }, [onStatus, onTranscript, stop]);
+  }, [onStatus, onTranscript, teardown]);
 
   return (
     <div className="flex flex-col items-center gap-4">

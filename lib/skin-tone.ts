@@ -80,5 +80,11 @@ export function toneCaveat(ctx: ToneContext): string | null {
   if (poorLight) {
     return "One honest note. The light here looked low, which can shift these readings, so treat them as approximate.";
   }
+  if (ctx.band === "unknown") {
+    // The calibration itself failed or never ran. Failing OPEN here would
+    // hand the most confident read to exactly the users this feature
+    // protects, so say the check did not happen.
+    return "One honest note. I could not double-check lighting and skin tone reliability this time, so treat these numbers as approximate.";
+  }
   return null;
 }

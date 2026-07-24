@@ -128,7 +128,7 @@ export function BarcodeScanner({
   return (
     <div className="flex flex-col items-center gap-4">
       <div id={regionId} aria-hidden="true" className="w-72 overflow-hidden rounded-2xl" />
-      <p className="text-lg text-zinc-700 dark:text-zinc-300" aria-hidden="true">
+      <p className="text-lg text-[var(--paper-dim)]" aria-hidden="true">
         {status}
       </p>
     </div>

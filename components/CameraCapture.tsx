@@ -119,6 +119,20 @@ export function CameraCapture({
         let luma = 255;
 
         const loop = () => {
+          try {
+            loopBody();
+          } catch (err) {
+            // A throw here would end the rAF chain while the Beeper's own
+            // timer chain keeps beeping forever with frozen guidance. Stop
+            // the audio and surface a real, spoken error instead.
+            console.error("capture guidance loop failed", err);
+            stopped.current = true;
+            beeper.stop();
+            onError("The camera guidance stopped working. Let us try again.");
+          }
+        };
+
+        const loopBody = () => {
           if (stopped.current || !video.videoWidth || !detector) {
             raf = requestAnimationFrame(loop);
             return;
@@ -242,7 +256,7 @@ export function CameraCapture({
         aria-hidden="true"
         className="h-64 w-64 rounded-2xl object-cover opacity-90"
       />
-      <p className="text-lg text-zinc-700 dark:text-zinc-300" aria-hidden="true">
+      <p className="text-lg text-[var(--paper-dim)]" aria-hidden="true">
         {status}
       </p>
     </div>

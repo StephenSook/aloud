@@ -72,10 +72,14 @@ export async function executeVoiceTool(
   name: string,
   args: Record<string, unknown>,
 ): Promise<unknown> {
+  // Every branch checks res.ok: an HTTP error body fed to the model as tool
+  // data reads as a confident-but-ungrounded answer, which a blind user
+  // cannot catch. An explicit error engages the "say you do not know" rule.
   if (name === "ingredient_info") {
     const res = await fetch(
       `/api/tools/ingredient?name=${encodeURIComponent(String(args.name ?? ""))}`,
     );
+    if (!res.ok) return { error: "ingredient lookup unavailable right now" };
     return res.json();
   }
   if (name === "allergen_check") {
@@ -84,10 +88,12 @@ export async function executeVoiceTool(
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ ingredients: args.ingredients ?? [] }),
     });
+    if (!res.ok) return { error: "allergen check unavailable right now" };
     return res.json();
   }
   if (name === "product_lookup") {
     const res = await fetch(`/api/product/${encodeURIComponent(String(args.barcode ?? ""))}`);
+    if (!res.ok) return { error: "product lookup unavailable right now" };
     const body = (await res.json()) as { status: string; read?: { summary: string } };
     return { status: body.status, spoken: body.read?.summary };
   }

@@ -53,7 +53,6 @@ export default function CapturePage() {
   const [verdict, setVerdict] = useState("");
   const [masks, setMasks] = useState<Mask[]>([]);
   const [engine, setEngine] = useState<"rest" | "mcp">("rest");
-  const attemptStart = useRef(0);
   const attemptCount = useRef(0);
 
   const logAttempt = useCallback((seconds: number | null, outcome: string) => {
@@ -129,7 +128,8 @@ export default function CapturePage() {
           return;
         }
 
-        const taskId = body.taskId!;
+        if (!body.taskId) throw new Error("no taskId in analysis response");
+        const taskId = body.taskId;
         const deadline = Date.now() + 60_000;
         while (Date.now() < deadline) {
           await new Promise((resolve) => setTimeout(resolve, 1500));
@@ -173,7 +173,6 @@ export default function CapturePage() {
             type="button"
             className="btn-primary"
             onClick={() => {
-              attemptStart.current = performance.now();
               setAnnouncement(
                 "Camera starting. Hold the phone at arm's length, screen facing you. Beeps get faster as your face gets centered.",
               );
@@ -276,7 +275,6 @@ export default function CapturePage() {
             type="button"
             className="btn-primary"
             onClick={() => {
-              attemptStart.current = performance.now();
               setAnnouncement("Camera starting again.");
               setPhase("capturing");
             }}

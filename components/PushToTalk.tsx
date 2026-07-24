@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import { speakCue } from "@/lib/audio-cues";
 import type { LastScan } from "@/lib/voice-config";
 
 type Status = "idle" | "recording" | "thinking" | "speaking";
@@ -99,10 +100,20 @@ export function PushToTalk({
             setStatus("idle");
             onStatus("Ready. Press and hold to talk.");
           };
+          // A mid-playback failure must never wedge the button in "speaking".
+          audioEl.onerror = () => {
+            URL.revokeObjectURL(url);
+            setStatus("idle");
+            onStatus("The voice cut out. Press and hold to try again.");
+            speakCue("The voice cut out. Press and hold to try again.", true);
+          };
           await audioEl.play();
         } else {
+          // Natural voice unavailable: keep the answer AUDIBLE via the
+          // browser voice instead of downgrading to silent on-screen text.
           setStatus("idle");
           onStatus(reply);
+          speakCue(reply, true);
         }
       } catch (err) {
         console.error(err);
@@ -163,6 +174,22 @@ export function PushToTalk({
         onPointerDown={() => void start()}
         onPointerUp={stop}
         onPointerLeave={stop}
+        // Keyboard parity: hold Space or Enter to talk, release to send.
+        // Pointer events never fire from a keyboard, so without these the
+        // fallback voice was not keyboard operable at all.
+        onKeyDown={(e) => {
+          if ((e.key === " " || e.key === "Enter") && !e.repeat) {
+            e.preventDefault();
+            void start();
+          }
+        }}
+        onKeyUp={(e) => {
+          if (e.key === " " || e.key === "Enter") {
+            e.preventDefault();
+            stop();
+          }
+        }}
+        aria-label={`${label}. Hold Space or Enter to talk from the keyboard.`}
       >
         {label}
       </button>

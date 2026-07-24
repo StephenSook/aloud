@@ -85,13 +85,31 @@ export function VoiceSession({
       };
 
       // A dead line must never keep claiming "Live": announce the drop and
-      // reset so the start button comes back.
+      // reset so the start button comes back. Guards: (a) a stale event from
+      // a previous session must never tear down the current one, so every
+      // handler checks it still owns pcRef; (b) "disconnected" is recoverable
+      // in WebRTC, so it gets a grace window; only "failed" acts immediately.
+      let disconnectTimer: ReturnType<typeof setTimeout> | null = null;
+      const announceDrop = () => {
+        if (intentionalStopRef.current || pcRef.current !== pc) return;
+        teardown();
+        setState("idle");
+        onStatus("The voice line dropped. Tap start to reconnect.");
+      };
       pc.onconnectionstatechange = () => {
-        if (intentionalStopRef.current) return;
-        if (pc.connectionState === "failed" || pc.connectionState === "disconnected") {
-          teardown();
-          setState("idle");
-          onStatus("The voice line dropped. Tap start to reconnect.");
+        if (intentionalStopRef.current || pcRef.current !== pc) return;
+        if (pc.connectionState === "failed") {
+          announceDrop();
+        } else if (pc.connectionState === "disconnected") {
+          if (!disconnectTimer) {
+            disconnectTimer = setTimeout(() => {
+              disconnectTimer = null;
+              if (pc.connectionState === "disconnected") announceDrop();
+            }, 5000);
+          }
+        } else if (pc.connectionState === "connected" && disconnectTimer) {
+          clearTimeout(disconnectTimer);
+          disconnectTimer = null;
         }
       };
 
@@ -110,10 +128,9 @@ export function VoiceSession({
       };
 
       dc.addEventListener("close", () => {
-        if (intentionalStopRef.current) return;
-        teardown();
-        setState("idle");
-        onStatus("The voice line dropped. Tap start to reconnect.");
+        // The stale-session guard matters here: a delayed close event from a
+        // stopped session must not tear down a newly started one.
+        announceDrop();
       });
 
       dc.addEventListener("open", () => {

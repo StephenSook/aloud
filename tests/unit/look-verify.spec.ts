@@ -56,4 +56,21 @@ describe("composeLookVerify", () => {
     const b = toBaseline([{ type: "redness", ui_score: 70 }, { type: "all" }], 5);
     expect(b.scores).toEqual({ redness: 70 });
   });
+
+  it("speaks deltas for all seven concerns, including the PR #50 additions", () => {
+    const seven: Baseline = {
+      capturedAt: 1,
+      scores: { redness: 60, oiliness: 60, moisture: 60, texture: 60, pore: 60, radiance: 60, firmness: 60 },
+    };
+    const read = composeLookVerify(seven, [
+      { type: "pore", ui_score: 70 },
+      { type: "radiance", ui_score: 70 },
+      { type: "firmness", ui_score: 50 },
+    ]);
+    // pore/radiance improvements are spoken, not silently dropped
+    expect(read).toMatch(/pores look less noticeable.*60 to 70/i);
+    expect(read).toMatch(/more radiant.*60 to 70/i);
+    // firmness decline attributed without blame
+    expect(read).toMatch(/firmness.*60 down to 50/i);
+  });
 });

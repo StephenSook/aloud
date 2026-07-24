@@ -72,6 +72,25 @@ Everything is spoken, operable with no screen, and never makes a medical or trea
 
 ## Architecture
 
+```mermaid
+C4Context
+  title Aloud, system context (C4 level 1)
+  Person(shopper, "Blind or low-vision shopper", "Any phone, screen reader on, screen off")
+  System(aloud, "Aloud", "Voice-first skincare assistant: Talk, Scan, Know your skin, Verify a look. Next.js on Vercel; secrets never leave the server.")
+  System_Ext(youcam, "Perfect Corp YouCam", "AI Skin Analysis + Skin Tone Analysis, via REST and the native YouCam MCP server")
+  System_Ext(openai, "OpenAI", "Realtime voice over WebRTC; agent tool loop; label vision")
+  System_Ext(obf, "Open Beauty Facts", "Barcode to product and ingredient list")
+  System_Ext(fb, "Deepgram + ElevenLabs", "Push-to-talk fallback STT and TTS")
+
+  Rel(shopper, aloud, "Speaks and listens", "beeps, spoken reads, ARIA live regions")
+  Rel(aloud, youcam, "Skin scores + tone calibration", "server-side, Bearer key")
+  Rel(aloud, openai, "Voice session + grounded answers", "ephemeral token to the browser")
+  Rel(aloud, obf, "Product lookup", "server-side proxy")
+  Rel(aloud, fb, "Fallback voice", "server-side keys")
+```
+
+Deeper decisions with their rejected alternatives live in [`docs/adr/`](docs/adr/).
+
 - **Next.js App Router + TypeScript on Vercel.** One app, one deploy, HTTPS everywhere (the camera and mic require it).
 - **Server (Route Handlers):** proxy for the Perfect Corp **YouCam AI Skin Analysis API** (file register, presigned PUT, task create, poll) and Open Beauty Facts; agent tool loop (Vercel AI SDK); ephemeral token mint for realtime voice. The skin analysis can also be routed through Perfect Corp's **native YouCam MCP server** (`lib/youcam-mcp.ts`, the `Perfect Corp MCP` toggle on the capture screen), returning the same real scores. All secrets stay server-side.
 - **Bias-aware honesty:** Perfect Corp's **Skin Tone Analysis** runs in parallel; the returned skin color becomes ITA, a neutral color metric. On deeper tones or low light, where dermatology documents reduced reliability of readings like redness, the read lowers its confidence and says so. Tone calibrates honesty only: never stated as identity, never tied to race, never stored.

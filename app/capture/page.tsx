@@ -129,7 +129,8 @@ export default function CapturePage() {
           return;
         }
 
-        const taskId = body.taskId!;
+        if (!body.taskId) throw new Error("no taskId in analysis response");
+        const taskId = body.taskId;
         const deadline = Date.now() + 60_000;
         while (Date.now() < deadline) {
           await new Promise((resolve) => setTimeout(resolve, 1500));

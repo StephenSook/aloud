@@ -14,6 +14,11 @@ const DELTA_SPOKEN: Record<string, { covered: string; axis: string }> = {
   texture: { covered: "skin texture looks smoother", axis: "smoothness" },
   moisture: { covered: "skin looks more hydrated", axis: "the hydrated look" },
   oiliness: { covered: "shine looks more controlled", axis: "the matte look" },
+  // The 7-concern tier (PR #50) added these; without entries their deltas
+  // were silently dropped from the before-and-after read.
+  pore: { covered: "pores look less noticeable", axis: "the look of pores" },
+  radiance: { covered: "skin looks more radiant", axis: "radiance" },
+  firmness: { covered: "skin looks firmer to the eye", axis: "the look of firmness" },
 };
 
 export function toBaseline(outputs: ScoredOutput[], now: number): Baseline {

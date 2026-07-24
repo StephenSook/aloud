@@ -11,12 +11,16 @@ export async function POST(request: NextRequest) {
     if (audio.byteLength === 0) {
       return NextResponse.json({ error: "no audio" }, { status: 400 });
     }
+    const key = process.env.DEEPGRAM_API_KEY;
+    // Fail fast on config, matching lib/youcam.ts: interpolating undefined
+    // would send "Token undefined" and surface as a misleading upstream 401.
+    if (!key) throw new Error("DEEPGRAM_API_KEY is not set");
     const res = await fetch(
       "https://api.deepgram.com/v1/listen?model=nova-3&smart_format=true",
       {
         method: "POST",
         headers: {
-          Authorization: `Token ${process.env.DEEPGRAM_API_KEY}`,
+          Authorization: `Token ${key}`,
           "Content-Type": contentType,
         },
         body: audio,

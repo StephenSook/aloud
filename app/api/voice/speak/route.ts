@@ -13,12 +13,16 @@ export async function POST(request: NextRequest) {
     if (!text || text.length > 2000) {
       return NextResponse.json({ error: "missing or oversized text" }, { status: 400 });
     }
+    const key = process.env.ELEVENLABS_API_KEY;
+    // Fail fast on config, matching lib/youcam.ts: a masked key would surface
+    // as a misleading upstream 401 instead of the real problem.
+    if (!key) throw new Error("ELEVENLABS_API_KEY is not set");
     const res = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}?output_format=mp3_44100_128`,
       {
         method: "POST",
         headers: {
-          "xi-api-key": process.env.ELEVENLABS_API_KEY ?? "",
+          "xi-api-key": key,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({

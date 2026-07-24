@@ -1,8 +1,35 @@
-# Aloud
+# ALOUD
 
-**Beauty, aloud.** A voice-first skincare assistant that lets a blind or low-vision person shop for skincare and understand their own skin independently, with the screen off.
+**Beauty, aloud. The first beauty AI a blind shopper can use alone, with the screen off.**
 
-**Live:** https://aloudbeauty.vercel.app · Built for the YouCam API Skin AI & Apparel VTO Hackathon (Skin AI topic).
+[![CI](https://github.com/StephenSook/aloud/actions/workflows/ci.yml/badge.svg)](https://github.com/StephenSook/aloud/actions/workflows/ci.yml)
+[![Live demo](https://img.shields.io/badge/live%20demo-online-3fb950.svg)](https://aloudbeauty.vercel.app)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Next.js 16](https://img.shields.io/badge/Next.js-16-black.svg?logo=nextdotjs)](package.json)
+[![Tests](https://img.shields.io/badge/tests-87%20unit%20%2B%2016%20e2e-3fb950.svg)](tests/)
+[![YouCam API Hackathon](https://img.shields.io/badge/YouCam%20API%20Hackathon-Skin%20AI-c9a227.svg)](https://youcam-api.devpost.com/)
+
+Built for the **YouCam API Skin AI & Apparel VTO Hackathon** on the Perfect Corp YouCam AI Skin Analysis API. Aloud speaks appearance, never medicine: a claim linter in CI blocks medical language from ever being spoken.
+
+## Judge quick access
+
+| To verify... | Go here |
+|---|---|
+| **Try it, zero setup** | [aloudbeauty.vercel.app](https://aloudbeauty.vercel.app) on any phone, screen reader on, screen off |
+| **The 3-minute demo** | [Demo video](https://youtu.be/RndOBX249KE) (real device recordings, real products, live API) |
+| **Claims are wired, not aspirational** | [`docs/FACTS.md`](docs/FACTS.md) wired-integration ledger, grep any row in the shipped code |
+| **It reproduces on your machine** | [Quickstart](#quickstart): clone, `npm install`, gates and build pass with zero keys |
+| **Safety is engineered** | [`docs/GUARDRAILS.md`](docs/GUARDRAILS.md) + `npm run guardrail` (CI-blocking claim linter) |
+
+## Live surfaces
+
+| Surface | URL |
+|---|---|
+| Demo video (2:55) | https://youtu.be/RndOBX249KE |
+| Web app (primary) | https://aloudbeauty.vercel.app |
+| iOS (TestFlight) | https://testflight.apple.com/join/AKWHYekX |
+| Android (APK) | https://github.com/StephenSook/aloud/releases/latest |
+| Code | https://github.com/StephenSook/aloud |
 
 ## Get the app
 

@@ -7,24 +7,8 @@
 import { describeIngredient } from "@/lib/cosing";
 import { findListedAllergens, listsFragrance } from "@/lib/allergens";
 import { titleCase } from "@/lib/cosing";
-
-const MARQUEE = new Set([
-  "NIACINAMIDE",
-  "RETINOL",
-  "SODIUM HYALURONATE",
-  "HYALURONIC ACID",
-  "SALICYLIC ACID",
-  "GLYCOLIC ACID",
-  "LACTIC ACID",
-  "ASCORBIC ACID",
-  "TOCOPHEROL",
-  "CERAMIDE NP",
-  "GLYCERIN",
-  "PANTHENOL",
-  "AZELAIC ACID",
-  "ZINC OXIDE",
-  "TITANIUM DIOXIDE",
-]);
+// One shared marquee set; a second copy here had already begun to drift risk.
+import { MARQUEE } from "@/lib/spoken-read";
 
 export type LabelRead = { summary: string; fullList: string | null };
 

@@ -25,7 +25,7 @@ function productTitle(brand: string, name: string): string {
 }
 
 /** Ingredients shoppers ask about by name; lead the highlights with these. */
-const MARQUEE = new Set([
+export const MARQUEE = new Set([
   "NIACINAMIDE",
   "RETINOL",
   "SODIUM HYALURONATE",

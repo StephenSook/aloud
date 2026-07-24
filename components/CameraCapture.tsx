@@ -256,7 +256,7 @@ export function CameraCapture({
         aria-hidden="true"
         className="h-64 w-64 rounded-2xl object-cover opacity-90"
       />
-      <p className="text-lg text-zinc-700 dark:text-zinc-300" aria-hidden="true">
+      <p className="text-lg text-[var(--paper-dim)]" aria-hidden="true">
         {status}
       </p>
     </div>

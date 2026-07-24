@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSkinTask, registerFile, runSkinTone, uploadBytes } from "@/lib/youcam";
+import { createSkinTask, registerFile, runSkinTone, SD_ACTIONS, uploadBytes } from "@/lib/youcam";
 import { analyzeSkinViaMcp } from "@/lib/youcam-mcp";
 import { parseToneContext } from "@/lib/skin-tone";
 
@@ -37,9 +37,10 @@ export async function POST(request: NextRequest) {
     const tonePromise = runSkinTone(bytes, image.type);
 
     if (engine === "mcp") {
-      // The MCP tool returns the full result synchronously.
+      // The MCP tool returns the full result synchronously. Same concern list
+      // as the REST path so both engines produce the same-depth read.
       const [result, toneResults] = await Promise.all([
-        analyzeSkinViaMcp(fileId, ["redness", "oiliness", "moisture", "texture"]),
+        analyzeSkinViaMcp(fileId, SD_ACTIONS),
         tonePromise,
       ]);
       return NextResponse.json({ engine: "mcp", result, tone: parseToneContext(toneResults) });

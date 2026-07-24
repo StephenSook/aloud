@@ -124,8 +124,15 @@ export function PushToTalk({
     [onStatus, onTranscript],
   );
 
+  // Release can land while start() is still awaiting the microphone (easy
+  // from the keyboard, possible from a quick tap during the permission
+  // prompt). Track it in a ref, not state, so the stop handler never reads a
+  // stale closure and the recorder never keeps running after release.
+  const stopRequestedRef = useRef(false);
+
   const start = useCallback(async () => {
     if (status !== "idle") return;
+    stopRequestedRef.current = false;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
@@ -142,6 +149,11 @@ export function PushToTalk({
       };
       recorder.start();
       setStatus("recording");
+      if (stopRequestedRef.current) {
+        // Released while the mic was still being acquired: send immediately.
+        recorder.stop();
+        return;
+      }
       onStatus("Listening. Release to send.");
     } catch (err) {
       console.error(err);
@@ -150,10 +162,11 @@ export function PushToTalk({
   }, [status, handle, onStatus]);
 
   const stop = useCallback(() => {
-    if (recorderRef.current && status === "recording") {
+    stopRequestedRef.current = true;
+    if (recorderRef.current && recorderRef.current.state === "recording") {
       recorderRef.current.stop();
     }
-  }, [status]);
+  }, []);
 
   const label =
     status === "recording"

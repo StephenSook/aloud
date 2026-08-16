@@ -21,7 +21,7 @@
     "@mediapipe/tasks-vision": "^0.10.35",
     "ai": "^7.0.31",
     "html5-qrcode": "^2.3.8",
-    "next": "16.2.10",
+    "next": "16.3.1",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "zod": "^4.4.3"
@@ -36,7 +36,7 @@
     "@types/react-dom": "^19",
     "axe-core": "^4.12.1",
     "eslint": "^9",
-    "eslint-config-next": "16.2.10",
+    "eslint-config-next": "16.3.1",
     "tailwindcss": "^4",
     "tsx": "^4.23.1",
     "typescript": "^5",

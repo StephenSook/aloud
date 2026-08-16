@@ -41,7 +41,8 @@ Company-reported figures are cited as "Perfect Corp reports", never as independe
 | Face-size rule | **VERIFIED live 2026-07-18** | 896px-wide image with face ~54% of width rejected `error_src_face_too_small`; ~77% accepted. Capture UI targets face >=65% of frame width |
 | HD tier costs (feature-cost endpoint) | **RESOLVED: build SD-only** | This account's feature-cost table lists NO skin-analysis SKUs (20 SKUs, all hair/photo tools); HD pricing unpublished anywhere. We ship SD only, so no HD claim ever appears |
 | Auth | **VERIFIED live 2026-07-18** | `Authorization: Bearer <API key>` works on v2.0 (secret key not needed for calls) |
-| Hackathon unit grant | **VERIFIED live 2026-08-15** | 1,000 units granted, 90-day validity from redemption. `GET /s2s/v1.0/client/credit` returns `amount: 337` remaining, expiry 2026-10-17, which covers the judging period and the winners date |
+| Hackathon unit grant | **VERIFIED live 2026-08-15** | 1,000 units granted, 90-day validity from redemption. `GET /s2s/v1.0/client/credit` returned `amount: 325` remaining, expiry 2026-10-17, which covers the judging period and the winners date |
+| Measured cost of one capture | **VERIFIED live 2026-08-15** | **12 units**, measured rather than inferred: credit read immediately before and after one real production capture went 337 to 325. The parallel Skin Tone Analysis call does not add to it. A failed task bills 0 (six rejected tone tasks left the balance at 325) |
 
 ## Week-1 capture kill experiment: PASSED (2026-07-19)
 
@@ -85,5 +86,6 @@ Any product not in Open Beauty Facts speaks the designed camera-and-manual fallb
 | Vision label reader (OBF-miss fallback) | **YES** | `app/api/label/route.ts` + `lib/label-read.ts` (gpt-5-mini vision -> INCI list -> same allergen/CosIng read). Verified on PRODUCTION 2026-07-22: read 13 ingredients off a realistic curved-tube panel, flagged Limonene + Linalool |
 | Deepgram STT + ElevenLabs TTS (fallback voice) | **YES** | `app/api/voice/transcribe` (Deepgram nova-3) + `app/api/voice/speak` (ElevenLabs flash v2.5) + `components/PushToTalk.tsx` on `/talk`. Round-trip verified on PRODUCTION 2026-07-22 (speak -> transcribe returned the exact sentence) |
 | YouCam Skin Tone Analysis (2nd Skin API) | **YES** | `lib/youcam.ts runSkinTone` + `lib/skin-tone.ts` (hex -> ITA color metric) via `/api/skin`; calibrates the read's confidence on deeper tones / low light. Verified live on PRODUCTION 2026-07-22: deep-tone face returned band=deep ITA -34.6 (caveat triggers), lighter face band=intermediate (no caveat) |
+| Capacitor native shells (iOS + Android) | **YES** | `capacitor.config.ts` (`appId com.aloudbeauty.app`, `server.url` = the live web app) + `ios/App/` + `android/`; build steps in `docs/NATIVE.md`. iOS on TestFlight (Apple-approved 2026-07-24, build valid to 2026-10-21), Android APK on the v0.1.0 release. Verified 2026-08-15: the shipped APK's embedded `assets/capacitor.config.json` matches the repo config, and it cold-launched and rendered the real app in an API-36 emulator with no fatal logs |
 
 Nothing gets claimed on a judged surface until its row says Wired: yes with a real file reference.

@@ -41,7 +41,7 @@ Company-reported figures are cited as "Perfect Corp reports", never as independe
 | Face-size rule | **VERIFIED live 2026-07-18** | 896px-wide image with face ~54% of width rejected `error_src_face_too_small`; ~77% accepted. Capture UI targets face >=65% of frame width |
 | HD tier costs (feature-cost endpoint) | **RESOLVED: build SD-only** | This account's feature-cost table lists NO skin-analysis SKUs (20 SKUs, all hair/photo tools); HD pricing unpublished anywhere. We ship SD only, so no HD claim ever appears |
 | Auth | **VERIFIED live 2026-07-18** | `Authorization: Bearer <API key>` works on v2.0 (secret key not needed for calls) |
-| Hackathon unit grant | VERIFIED | 1,000 units, 90-day validity from redemption; ~18 units spent on verification runs |
+| Hackathon unit grant | **VERIFIED live 2026-08-15** | 1,000 units granted, 90-day validity from redemption. `GET /s2s/v1.0/client/credit` returns `amount: 337` remaining, expiry 2026-10-17, which covers the judging period and the winners date |
 
 ## Week-1 capture kill experiment: PASSED (2026-07-19)
 

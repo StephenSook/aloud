@@ -1,8 +1,8 @@
-# Devpost submission draft (Aloud)
+# Devpost submission (Aloud)
 
 Every number here traces to docs/FACTS.md and every named integration to the
-wired-ledger. Draft for the form fields; final copy gets an em-dash and
-AI-tone sweep before paste. Not yet submitted.
+wired-ledger. Submitted 2026-07-23 to the YouCam API Skin AI and Apparel VTO
+Hackathon; the live project page is linked at the end of this file.
 
 ## Tagline (one line)
 

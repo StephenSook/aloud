@@ -127,7 +127,7 @@ Every spoken line passes an automated claim linter (`npm run guardrail`): cosmet
 
 ## Status
 
-In active development for the hackathon (deadline Aug 17, 2026). Build log in commit history.
+Submitted to the YouCam API Skin AI and Apparel VTO Hackathon on 2026-07-23. Judging runs through Aug 31, 2026. All five live surfaces above are up and stay up through judging. Build log in commit history.
 
 ## License
 

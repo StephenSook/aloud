@@ -81,16 +81,33 @@ for (const dir of ["lib", "app", "components"]) {
   }
 }
 
-// Pass 2: tone in judge-facing markdown
+// Pass 2: tone in judge-facing markdown.
+// Every markdown file a judge can open on the public repo is in scope: the
+// root-level files (README, AGENTS, SECURITY, CONTRIBUTING, CODE_OF_CONDUCT),
+// everything under docs/, and the .github/ templates. walk() skips dotted
+// names, so .github is listed explicitly or it would never be scanned.
+function safeWalk(dir: string): string[] {
+  try {
+    return walk(dir, [".md"]);
+  } catch {
+    return [];
+  }
+}
+
+function rootMarkdown(): string[] {
+  try {
+    return readdirSync(ROOT)
+      .filter((name) => name.endsWith(".md"))
+      .map((name) => join(ROOT, name));
+  } catch {
+    return [];
+  }
+}
+
 const mdFiles = [
-  join(ROOT, "README.md"),
-  ...(() => {
-    try {
-      return walk(join(ROOT, "docs"), [".md"]);
-    } catch {
-      return [];
-    }
-  })(),
+  ...rootMarkdown(),
+  ...safeWalk(join(ROOT, "docs")),
+  ...safeWalk(join(ROOT, ".github")),
 ];
 for (const file of mdFiles) {
   if (EXCLUDE.has(relative(ROOT, file))) continue;

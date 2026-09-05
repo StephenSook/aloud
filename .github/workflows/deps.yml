@@ -1,0 +1,51 @@
+name: Metered deps
+
+# Dead-man detector for the metered fallback path. Deepgram's balance is
+# unreadable with the shipped key (its only scope is account:write, so every
+# project-scoped endpoint 403s) and the console never displayed an expiry for
+# the promotional credit. So this does not read the balance, it tests its
+# effect: a funded account and an exhausted one answer an ordinary
+# transcription request differently.
+#
+# It probes the SHIPPED route rather than the vendor, which proves the deployed
+# wiring, the server-side key, the parsing and the vendor in one call, and means
+# no credential is needed here. Do not add one.
+#
+# Daily, not every 30 minutes: a credit dies on a timescale of days, and a
+# tighter cadence would only burn the credit it is watching. Offset minute
+# because GitHub throttles */N and :00 schedules.
+on:
+  schedule:
+    - cron: "17 13 * * *"
+  workflow_dispatch:
+
+jobs:
+  transcribe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prove the Deepgram fallback path is funded
+        run: |
+          set -e
+          python3 - <<'PY'
+          import struct, math
+          sr = 16000
+          f = b''.join(struct.pack('<h', int(12000 * math.sin(2 * math.pi * 440 * i / sr))) for i in range(sr))
+          open('probe.wav', 'wb').write(
+              b'RIFF' + struct.pack('<I', 36 + len(f)) + b'WAVEfmt '
+              + struct.pack('<IHHIIHH', 16, 1, 1, sr, sr * 2, 2, 16)
+              + b'data' + struct.pack('<I', len(f)) + f)
+          PY
+          test -s probe.wav
+
+          code=$(curl -s -o body.json -w "%{http_code}" --max-time 30 \
+            -X POST -H "Content-Type: audio/wav" --data-binary @probe.wav \
+            "https://aloudbeauty.vercel.app/api/voice/transcribe")
+          echo "POST /api/voice/transcribe -> $code"
+          cat body.json || true
+          echo
+
+          # Status alone is not enough: check content, because the route answers
+          # 502 with {"error":...} when the upstream call fails. Both gates run
+          # bare on the exit path, no pipe.
+          [ "$code" = "200" ] || exit 1
+          grep -q '"text"' body.json || exit 1

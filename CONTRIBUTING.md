@@ -1,7 +1,8 @@
 # Contributing
 
-Aloud is a hackathon build (YouCam API Skin AI Hackathon, Aug 2026), so the
-bar for merging during judging is high, but issues and PRs are welcome.
+Aloud is a hackathon build (YouCam API Skin AI Hackathon, 2026, 1st place).
+The accessibility and safety rules below are non-negotiable, so the merge bar
+is high, but issues and PRs are welcome.
 
 - Read `AGENTS.md` for the build rules; the hard ones (cosmetic language
   only, scores-grounded speech, secrets server-side, screen-off operability)

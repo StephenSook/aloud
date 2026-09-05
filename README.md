@@ -7,11 +7,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black.svg?logo=nextdotjs)](package.json)
 [![Tests](https://img.shields.io/badge/tests-87%20unit%20%2B%2016%20e2e-3fb950.svg)](tests/)
-[![YouCam API Hackathon](https://img.shields.io/badge/YouCam%20API%20Hackathon-Skin%20AI-c9a227.svg)](https://youcam-api.devpost.com/)
+[![YouCam API Hackathon: 1st Place](https://img.shields.io/badge/YouCam%20API%20Hackathon-1st%20Place%20Winner-c9a227.svg)](https://devpost.com/software/aloud-lxqr70)
 
-Built for the **YouCam API Skin AI & Apparel VTO Hackathon** on the Perfect Corp YouCam AI Skin Analysis API. Aloud speaks appearance, never medicine: a claim linter in CI blocks medical language from ever being spoken.
+**Winner, 1st Place, [YouCam API Skin AI & Apparel VTO Hackathon](https://youcam-api.devpost.com/)** (Perfect Corp), announced 2026-09-04 out of 238 submissions.
 
-## Judge quick access
+Built on the Perfect Corp YouCam AI Skin Analysis API. Aloud speaks appearance, never medicine: a claim linter in CI blocks medical language from ever being spoken.
+
+## Quick access
 
 | To verify... | Go here |
 |---|---|
@@ -127,7 +129,9 @@ Every spoken line passes an automated claim linter (`npm run guardrail`): cosmet
 
 ## Status
 
-Submitted to the YouCam API Skin AI and Apparel VTO Hackathon on 2026-07-23. Judging runs through Aug 31, 2026. All five live surfaces above are up and stay up through judging. Build log in commit history.
+Submitted 2026-07-23, 25 days before the deadline. **Won 1st place ($5,000) out of 238 submissions, announced 2026-09-04.** Judging was materially blind to the running app: the official rules allowed judges to score from the description, images and video alone.
+
+All five live surfaces above are up and stay up. Two dependencies carry hard expiry dates: the YouCam API unit grant expires 2026-10-17 and the current TestFlight build expires 2026-10-21. Build log in commit history.
 
 ## License
 
